@@ -88,6 +88,7 @@ int __cdecl main(void)
 	// Accept a client socket
 	for (;;)
 	{
+		printf("why       ");
 	}
 	ClientSocket = accept(ListenSocket, NULL, NULL);
 	if (ClientSocket == INVALID_SOCKET) {
