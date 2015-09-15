@@ -60,6 +60,11 @@ int __cdecl main(void)
 		return 1;
 	}
 
+	/* mine*/
+	u_long iMode = 1;
+	ioctlsocket(ListenSocket,FIONBIO,&iMode);
+	/**/
+
 	// Setup the TCP listening socket
 	iResult = bind(ListenSocket, result->ai_addr, (int)result->ai_addrlen);
 	if (iResult == SOCKET_ERROR) {
@@ -81,6 +86,9 @@ int __cdecl main(void)
 	}
 
 	// Accept a client socket
+	for (;;)
+	{
+	}
 	ClientSocket = accept(ListenSocket, NULL, NULL);
 	if (ClientSocket == INVALID_SOCKET) {
 		printf("accept failed with error: %d\n", WSAGetLastError());
