@@ -1,3 +1,9 @@
+/*
+	Name: Steven Johnston
+	Assignment: 1
+	Date: 9/17/2015
+	Purpose: Learn basic of win32 through the uses of visual objects
+*/
 #include <windows.h>
 
 #define LISTBOXONE 100
@@ -35,19 +41,19 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nS
 			"Window Class Failed",
 			MB_ICONERROR);
 	}
-
+	//Creation of the window (the form)
 	HWND hWnd = CreateWindowEx(NULL,
-		"Window Class",
-		"Steven Johnston: Assignment 01",
-		WS_OVERLAPPEDWINDOW,
-		200,
-		200,
-		640,
-		480,
-		NULL,
-		NULL,
-		hInst,
-		NULL);
+		"Window Class",						//window type
+		"Steven Johnston: Assignment 01",	//window text
+		WS_OVERLAPPEDWINDOW,				//Additional style
+		200,								//x position
+		200,								//y position
+		640,								//width
+		480,								//height
+		NULL,								//parent
+		NULL,								//
+		hInst,								//
+		NULL);								//
 
 	if (!hWnd)
 	{
@@ -58,21 +64,32 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nS
 			"Window Creation Failed",
 			MB_ICONERROR);
 	}
-
+	//Display the main window (form)
 	ShowWindow(hWnd, nShowCmd);
 
 	MSG msg;
 	ZeroMemory(&msg, sizeof(MSG));
-
+	//Loops untill program recieves WM_QUIT to end the programm
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
 		TranslateMessage(&msg);
+		//calls winproc if WM_TIMER is not NULL
 		DispatchMessage(&msg);
 	}
 
 	return 0;
 }
 
+//
+//Function Name: WinProc
+//Description: Use message recived from getmessage function and determine what action needs to take place 
+//Parameters
+//	HWND hWnd:		Handle to the Window
+//	UINT msg:		The message from GetMessage
+//	WPARAM wParam:	Additional information for the meesage
+//	LPARAM lParam:	Additional information for the message
+//Returns
+//	LRESULT:
 LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
@@ -94,33 +111,39 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL);
 		HGDIOBJ hfDefault = GetStockObject(DEFAULT_GUI_FONT);
+		//set font on list box one to DEFAULT_GUI_FONT
 		SendMessage(hListOne,
 			WM_SETFONT,
 			(WPARAM)hfDefault,
 			MAKELPARAM(FALSE, 0));
 
+		//Add string to list box one
 		SendMessage(hListOne,
 			LB_ADDSTRING,
 			NULL,
 			(LPARAM)"John Smith");
+		//Add string to list box one
 		SendMessage(hListOne,
 			LB_ADDSTRING,
 			NULL,
 			(LPARAM)"Mark Ryan");
+		//Add string to list box one
 		SendMessage(hListOne,
 			LB_ADDSTRING,
 			NULL,
 			(LPARAM)"Jerry Hayes");
+		//Add string to list box one
 		SendMessage(hListOne,
 			LB_ADDSTRING,
 			NULL,
 			(LPARAM)"Anthony Hodgins");
+		//Add string to list box one
 		SendMessage(hListOne,
 			LB_ADDSTRING,
 			NULL,
 			(LPARAM)"Bart Simpson");
 
-
+		//Create List Box Two with same 
 		hListTwo = CreateWindowEx(WS_EX_CLIENTEDGE,
 			"LISTBOX",
 			"",
@@ -133,16 +156,12 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			(HMENU)LISTBOXTWO,
 			GetModuleHandle(NULL),
 			NULL);
+		//set list box two's font to DEFAULT_GUI_FONT
 		hfDefault = GetStockObject(DEFAULT_GUI_FONT);
 		SendMessage(hListTwo,
 			WM_SETFONT,
 			(WPARAM)hfDefault,
 			MAKELPARAM(FALSE, 0));
-
-		//
-		// Instead of setting text, we need to either add a string or insert a string
-		// into a Listbox. In this case, adding a string is demonstrated.
-		//
 		
 
 		// Create a push button
@@ -165,28 +184,8 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			MAKELPARAM(FALSE, 0));
 	}
 	break;
-	case WM_INITDIALOG:
-	{
-
-	case LISTBOXONE:
-		// It's our listbox, check the notification code
-		switch (HIWORD(wParam))
-		{
-		case LBN_SELCHANGE:
-			// Selection changed, do stuff here.
-			OutputDebugString("sdfosdfjjfjfjfj");
-			break;
-		}
-
-		break;
-
-
-
-
-	}
-	break;
 	case WM_COMMAND:
-		switch (LOWORD(wParam))
+		switch (LOWORD(wParam))//What object is activated
 		{
 		case BUTTON:
 		{
@@ -204,19 +203,22 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			// display it with the the MessageBox method.
 			if (indexInList != LB_ERR)
 			{
+				//Get text of selected list item
 				SendMessage(hListOne,
 					LB_GETTEXT,
 					indexInList,
 					reinterpret_cast<LPARAM>(buffer));
+				//remove selected list item
 				SendMessage(hListOne,
 					LB_DELETESTRING,
 					indexInList,
 					NULL);
+				//add text from selected list item to second list box
 				SendMessage(hListTwo,
 					LB_ADDSTRING,
 					NULL,
 					(LPARAM) buffer);
-
+				//Set button to disabled
 				EnableWindow(GetDlgItem(hWnd, BUTTON), FALSE);
 			}
 
@@ -225,15 +227,16 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 
 		case LISTBOXONE:
-			switch (HIWORD(wParam))
+			switch (HIWORD(wParam))//What action took place
 			{
-				case LBN_SELCHANGE:
+				case LBN_SELCHANGE://ListBoxOne selected item has changed
 					int indexInList = (int)SendMessage(hListOne,
 						LB_GETCURSEL,
 						(WPARAM)0,
 						(LPARAM)0);
 					//Item is selected
 
+					//if no item is slected disable the button
 					if (indexInList != LB_ERR)
 						EnableWindow(GetDlgItem(hWnd, BUTTON), TRUE);
 					break;
