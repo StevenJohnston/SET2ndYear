@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hi Lo Game</title>
+	<script type="text/javascript">
+ 	
+ 	function myClass()
+ 	{
+ 		name = "steven";
+ 		getName = function(){return name}; 
+ 	}
+	//var $SJ;
+
+	var $SJ = function(obj)
+	{
+		innerHTML = (function(newText)
+		{
+			obj.innerHTML = newText;
+		})(obj);
+
+
+	}
+	</script>
+
+
+
+	<script type="text/javascript">
+		var name;
+		var max;
+		function sendName()
+		{
+			name = document.getElementById("txtName").value;
+			document.getElementById("divName").style.display="none";
+
+			document.getElementById("lblName").innerHTML= name;
+			document.getElementById("txtMax").style.display="block";
+
+		}
+		function setMax()
+		{
+
+		}
+	</script>
+</head>
+<body>
+	<div id="divName">
+		Name: <input type="text" id="txtName">
+		<button id="btnName" onclick="sendName()">Submit</button>
+	</div>
+	<div id="txtMax" style="display:none">
+		Hi, <label id="lblName"></label> enter Maximum guess number 
+		<button id="btnMax" onclick="$SJ(this).innerHTML('newText')">Set Max</button>
+	</div>
+</body>
+
+</html>
