@@ -3,23 +3,43 @@
 <head>
 	<title>Hi Lo Game</title>
 	<script type="text/javascript">
- 	
- 	function myClass()
- 	{
- 		name = "steven";
- 		getName = function(){return name}; 
- 	}
-	//var $SJ;
 
-	var $SJ = function(obj)
-	{
-		innerHTML = (function(newText)
+	$SJ = function(element) {
+		if(typeof element == "string")
 		{
-			obj.innerHTML = newText;
-		})(obj);
+			switch(element.charAt(0))
+			{
+				case '#':
+					element = document.getElementById(element.substring(1));
+					break;
+				case("."):
+					element = document.getElementByClassName(element.substring(1));
+					break;
+				case("["):
+					element = document.getElementByName(element.substring(1));
+					break;
+				default:
+					break;
+			}
+		}
+	    return {
+	        innerHTML: function(html) {
+	            element.innerHTML = html;
+
+	        }
+	    }
+	    return {
+	        style: function(attr) {
+	        	return {
+			        display: function(val) {
+			            element.style.display = val;
+			        }
+			    }
+	        }
+	    }
+	};
 
 
-	}
 	</script>
 
 
@@ -30,10 +50,11 @@
 		function sendName()
 		{
 			name = document.getElementById("txtName").value;
-			document.getElementById("divName").style.display="none";
-
+			//document.getElementById("divName").style.display="none";
+			$SJ("#divName").style("display").attr("none");
 			document.getElementById("lblName").innerHTML= name;
 			document.getElementById("txtMax").style.display="block";
+			$SJ("#btnMax").innerHTML("this aws");
 
 		}
 		function setMax()
@@ -49,7 +70,7 @@
 	</div>
 	<div id="txtMax" style="display:none">
 		Hi, <label id="lblName"></label> enter Maximum guess number 
-		<button id="btnMax" onclick="$SJ(this).innerHTML('newText')">Set Max</button>
+		<button id="btnMax" onclick='$SJ(this).innerHTML("newText")'>Set Max</button>
 	</div>
 </body>
 
