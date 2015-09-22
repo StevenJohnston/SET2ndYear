@@ -26,51 +26,101 @@
 	        innerHTML: function(html) {
 	            element.innerHTML = html;
 
-	        }
-	    }
-	    return {
-	        style: function(attr) {
-	        	return {
-			        display: function(val) {
-			            element.style.display = val;
-			        }
-			    }
+	        },
+	        style: function(attr,value) {
+	        	switch(attr)
+	        	{
+	        		case "display":
+	        			element.style.display = value;
+	        			break;
+	        		case "background-color":
+	        			element.backgroundcolor = value;
+	        			break;
+	        		default:
+	        			break;
+	        	}
+	        	
+	        },
+	        ready: function(func) {
+	        	if(element == "window")
+	        	{
+	        		element = window;
+	        		element.onload = func;
+	        	}
+	        },
+	        click: function(func)
+	        {
+	        	element.onclick = func;
+	        },
+	        value: function()
+	        {
+	        	return element.value;
 	        }
 	    }
 	};
-
-
 	</script>
 
 
 
 	<script type="text/javascript">
-		var name;
-		var max;
-		function sendName()
-		{
-			name = document.getElementById("txtName").value;
-			//document.getElementById("divName").style.display="none";
-			$SJ("#divName").style("display").attr("none");
-			document.getElementById("lblName").innerHTML= name;
-			document.getElementById("txtMax").style.display="block";
-			$SJ("#btnMax").innerHTML("this aws");
+	//$SJ("#btnMax").innerHTML("this aws");
+	$SJ("window").ready(function()
+	{
+		$SJ("#btnName").click(function(){
+			var name = $SJ("#txtName").value();
+			if(/^[a-zA-Z]+$/.test(name))
+			{
+				$SJ("#divName").style("display","none");
+				$SJ("#lblName").innerHTML(name);
+				$SJ("#divMax").style("display","block");
+			}
+		});
 
-		}
-		function setMax()
-		{
+		$SJ("#btnMax").click(function(){
+			var max = $SJ("#txtMax").value();
+			if(/^\d+$/.test(max))
+			{
+				$SJ("#divMax").style("display","none");
+				$SJ("#divGame").style("display","block");
+				$SJ("#lblMin").innerHTML(1);
+				$SJ("#lblMax").innerHTML(max);
+			}
+		});
 
-		}
+		$SJ("#btnGuess").click(function(){
+			var guess = $SJ("#txtguess").value();
+			if(/^\d+$/.test(guess))
+			{
+				alert("guess");
+			}
+		});
+
+	});	
 	</script>
 </head>
 <body>
 	<div id="divName">
 		Name: <input type="text" id="txtName">
-		<button id="btnName" onclick="sendName()">Submit</button>
+		<button id="btnName">Submit</button>
 	</div>
-	<div id="txtMax" style="display:none">
+	<div id="divMax" style="display:none">
 		Hi, <label id="lblName"></label> enter Maximum guess number 
-		<button id="btnMax" onclick='$SJ(this).innerHTML("newText")'>Set Max</button>
+		<input type="text" id="txtMax">
+		<button id="btnMax">Set Max</button>
+	</div>
+	<div id="divGame" style="display:none">
+		<div id="divRange">
+			select a number between <label id="lblMin"></lable> and <label id="lblMax"></lable>
+		</div>
+
+		<div id="divGuess">
+			<input type="text" id="txtguess">
+			<button id="btnGuess">
+		</div>
+
+		<div id="divResult">
+
+		</div>
 	</div>
 </body>
 
