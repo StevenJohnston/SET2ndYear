@@ -17,16 +17,24 @@
 #define MAX_CLIENTS 64
 using namespace std;
 
+struct ServerCall
+{
+	int callType;
+	int memberId;
+	char firstName[32];
+	char lastName[32];
+	char dOB[11];
+} typedef ServerCall;
+
+struct ClientCall
+{
+	int error;
+	char message[32];
+} typedef ClientCall;
+
 int __cdecl main(void)
 {
-	struct ReciveMessage
-	{
-		int callType;
-		int memberId;
-		char firstName[32];
-		char lastName[32];
-		char dOB[10];
-	} typedef ReciveMessage;
+	
 
 	SOCKET clientSocket[MAX_CLIENTS];
 	for (int x = 0; x < MAX_CLIENTS; x++)
@@ -125,34 +133,38 @@ int __cdecl main(void)
 		{
 			if (clientSocket[cClientSocket] != INVALID_SOCKET)
 			{
-				ReciveMessage inMessage;
-
+				ServerCall inMessage;
 				char * charInMessage = (char*)&inMessage;
+
+				ClientCall outMessage = {1, "Insert Perfect"};
+				char * charOutMessage = (char*)&outMessage;
+
 				do {
 					recvbuf[0] = '\0';
-					iResult = recv(clientSocket[cClientSocket], charInMessage, sizeof(inMessage), 0);
+					iResult = recv(clientSocket[cClientSocket], charInMessage, sizeof(ServerCall), 0);
 					if (iResult > 0) {
-						printf("Bytes received: %d: %s\n", iResult,inMessage.firstName);
+						//printf("Bytes received: %d: %s\n", iResult,inMessage.firstName);
 
 						// Echo the buffer back to the sender
-						iSendResult = send(clientSocket[cClientSocket], charInMessage, sizeof(inMessage), 0);
+						iSendResult = send(clientSocket[cClientSocket], charOutMessage, sizeof(ClientCall), 0);
 						if (iSendResult == SOCKET_ERROR) {
 							printf("send failed with error: %d\n", WSAGetLastError());
 							closesocket(clientSocket[cClientSocket]);
 							WSACleanup();
 							return 1;
 						}
-						printf("Bytes sent: %d\n", iSendResult);
+						//printf("Bytes sent: %d\n", iSendResult);
 						break;
 					}
 					else if (iResult == 0)
 					{
 						printf("Connection closing...\n");
-						closesocket(ClientSocket);
+						closesocket(clientSocket[cClientSocket]);
 						clientSocket[cClientSocket] = INVALID_SOCKET;
 					}
 					else {
-						printf("recv failed with error: %d\n", WSAGetLastError());
+						//will be spammed thanks to non blovking
+						//printf("recv failed with error: %d\n", WSAGetLastError());
 						//closesocket(ClientSocket);
 						//WSACleanup();
 						//return 1;

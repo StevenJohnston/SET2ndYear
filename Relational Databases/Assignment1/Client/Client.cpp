@@ -5,6 +5,9 @@
 #include <ws2tcpip.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string>
+#include <iostream>
+#include <time.h>
 
 
 // Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
@@ -16,23 +19,34 @@
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "27015"
 
-struct ReciveMessage
+using namespace std;
+
+struct ServerCall
 {
 	int callType;
 	int memberId;
 	char firstName[32];
 	char lastName[32];
-	char dOB[10];
-} typedef ReciveMessage;
-bool insert(SOCKET ConnectSocket, int quantity);
-bool update(SOCKET ConnectSocket);
-bool find(SOCKET ConnectSocket,int memberId);
-bool close(SOCKET ConnectSocket);
+	char dOB[11];
+} typedef ServerCall;
+
+struct ClientCall
+{
+	int error;
+	char message[32];
+} typedef ClientCall;
+
+bool insertMany(SOCKET ConnectSocket, int quantity);
+int getNum(int min, int max);
+void randomServerCall(ServerCall *message);
+
+
+
 int __cdecl main(int argc, char **argv)
 {
-	
+	srand(time(NULL));
 
-	ReciveMessage tempMessage = {1,1,"steven","johnston","9/21/2015"};
+	ServerCall tempMessage = { 1,1,"steven","johnston","9/21/2015" };
 	char* toSend = (char*)&tempMessage;
 
 	WSADATA wsaData;
@@ -100,6 +114,38 @@ int __cdecl main(int argc, char **argv)
 		WSACleanup();
 		return 1;
 	}
+
+
+
+	printf("Connected to server:\n Select statment\n  1.Insert\n  2.Update\n  3.Find\n  4.Exit");
+
+	int menuSelection = getNum(1,4);
+	int insertQuantity;
+	switch (menuSelection)
+	{
+	case 1:
+		cout << "How many Random records would you like to input:" << endl;
+		insertQuantity = getNum(1,40000);
+		insertMany(ConnectSocket,insertQuantity);
+		cout << "** Begining to insert " << insertQuantity << " records, ***NOTE*** If the server DB reaches 40,000 records during this process, this process will be stopped with notic **" << endl;
+		break;
+	case 2:
+		cout << "Member id to update:" << endl;
+			
+		cout << "New First Name:" << endl;
+		cout << "New Last Name:" << endl;
+		cout << "New Date of Birth:" << endl;
+
+		break;
+	case 3:
+		break;
+	case 4:
+		break;
+	default:
+		break;
+	}
+
+
 	/*
 	for (int i = 0 ; i < 5; i++)
 	{
@@ -125,7 +171,6 @@ int __cdecl main(int argc, char **argv)
 			WSACleanup();
 			return 1;
 		}
-
 		// Receive until the peer closes the connection
 		do {
 
@@ -148,57 +193,110 @@ int __cdecl main(int argc, char **argv)
 
 	return 0;
 }
-bool insert(SOCKET ConnectSocket,int quantity)
+bool insertMany(SOCKET ConnectSocket, int quantity)
 {
 	int iResult = 0;
-	ReciveMessage messageOut;
-	char* sendMessage = (char*)&messageOut;
+	ServerCall newRecord = { 1,1,"steven","johnston","9/21/2015" };
+	char* charNewRecord = (char*)&newRecord;
+
+	
+
+	ClientCall fromServer;
+	char* charFromServer = (char*)&fromServer;
+
 	for (int i = 0; i < quantity; i++)
 	{
+		memset(&newRecord, 0, sizeof(ServerCall));
+		randomServerCall(&newRecord);
+
+		// Send an initial buffer
 		
-		iResult = send(ConnectSocket, sendMessage, sizeof(ReciveMessage), 0);
+		iResult = send(ConnectSocket, charNewRecord, sizeof(ServerCall), 0);
 		if (iResult == SOCKET_ERROR) {
 			printf("send failed with error: %d\n", WSAGetLastError());
 			//closesocket(ConnectSocket);
 			//WSACleanup();
 			//return 1;
 		}
-
 		//printf("Bytes Sent: %ld\n", iResult);
 
 		// shutdown the connection since no more data will be sent
-		
-
-		// Receive until the peer closes the connection
-		
-	}
-}
-bool recive(SOCKET ConnectSocket)
-{
-	int iResult = 0;
-	ReciveMessage messageOut;
-	char* sendMessage = (char*)&messageOut;
-	do {
-		iResult = recv(ConnectSocket, sendMessage, sizeof(messageOut), 0);
-		if (iResult > 0)
-		{
-			printf("Bytes received: %d\n", iResult);
-			break;
+		//iResult = shutdown(ConnectSocket, SD_SEND);
+		if (iResult == SOCKET_ERROR) {
+			printf("shutdown failed with error: %d\n", WSAGetLastError());
+			closesocket(ConnectSocket);
+			WSACleanup();
+			return 1;
 		}
-		else if (iResult == 0)
-			printf("Connection closed\n");
-		else
-			printf("recv failed with error: %d\n", WSAGetLastError());
+		// Receive until the peer closes the connection
+		do {
 
-	} while (iResult > 0);
-}
-bool close(SOCKET ConnectSocket)
-{
-	int iResult = shutdown(ConnectSocket, SD_SEND);
-	if (iResult == SOCKET_ERROR) {
-		printf("shutdown failed with error: %d\n", WSAGetLastError());
-		closesocket(ConnectSocket);
-		WSACleanup();
-		return 1;
+			iResult = recv(ConnectSocket, charFromServer, sizeof(ClientCall), 0);
+			//fromServer = *reinterpret_cast<ClientCall*>(charFromServer);
+			if (iResult > 0)
+			{
+				//printf("message From server %s\n", fromServer.message);
+
+				break;
+			}
+			else if (iResult == 0)
+				printf("Connection closed\n");
+			else
+				printf("recv failed with error: %d\n", WSAGetLastError());
+
+		} while (iResult > 0);
 	}
+	cout << "insert Done" << endl;
+	return true;
+}
+
+int getNum(int min, int max)
+{
+	string input;
+	bool enterError;
+	int menuSelection;
+	do
+	{
+		cin >> input;
+		enterError = false;
+		try
+		{
+			menuSelection = stoi(input, nullptr, 10);
+			if (menuSelection > max || menuSelection < min)
+			{
+				enterError = true;
+			}
+		}
+		catch (std::invalid_argument e)
+		{
+			enterError = true;
+		}
+		if (enterError)
+		{
+			cout << "Enter a number listed please" << endl;
+		}
+	} while (enterError);
+	return menuSelection;
+}
+
+void randomServerCall(ServerCall *message)
+{
+	char characters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	int firstNameLen = rand() % 32 + 1;
+	int lastNameLen = rand() % 32 + 1;
+	for (int i = 0; i < firstNameLen || i < lastNameLen; i++)
+	{
+		if (i < firstNameLen)
+		{
+			message->firstName[i] = characters[rand() % 52];
+		}
+		if (i < lastNameLen)
+		{
+			message->lastName[i] = characters[rand() % 52];
+		}
+	}
+	int year = rand() % 115 + 1900;
+	int month = rand() % 12 + 1;
+	int day = rand() % 28 + 1;
+	sprintf_s(message->dOB,"%02d/%02d/%04d",month,day,year);
 }
