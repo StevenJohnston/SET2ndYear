@@ -14,9 +14,26 @@
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "27015"
+#define MAX_CLIENTS 64
+using namespace std;
 
 int __cdecl main(void)
 {
+	struct ReciveMessage
+	{
+		int callType;
+		int memberId;
+		char firstName[32];
+		char lastName[32];
+		char dOB[10];
+	} typedef ReciveMessage;
+
+	SOCKET clientSocket[MAX_CLIENTS];
+	for (int x = 0; x < MAX_CLIENTS; x++)
+	{
+		clientSocket[x] = INVALID_SOCKET;
+	}
+
 	WSADATA wsaData;
 	int iResult;
 
@@ -61,8 +78,7 @@ int __cdecl main(void)
 	}
 
 	/* mine*/
-	u_long iMode = 1;
-	ioctlsocket(ListenSocket,FIONBIO,&iMode);
+	
 	/**/
 
 	// Setup the TCP listening socket
@@ -75,69 +91,88 @@ int __cdecl main(void)
 		return 1;
 	}
 
-	freeaddrinfo(result);
+	//freeaddrinfo(result);
 
 	iResult = listen(ListenSocket, SOMAXCONN);
 	if (iResult == SOCKET_ERROR) {
-		printf("listen failed with error: %d\n", WSAGetLastError());
-		closesocket(ListenSocket);
+		//printf("listen failed with error: %d\n", WSAGetLastError());
+		//closesocket(ListenSocket);
 		WSACleanup();
 		return 1;
 	}
+
+	u_long iMode = 1;
+	ioctlsocket(ListenSocket, FIONBIO, &iMode);
 
 	// Accept a client socket
 	for (;;)
 	{
-		printf("why        ");
-	}
-	ClientSocket = accept(ListenSocket, NULL, NULL);
-	if (ClientSocket == INVALID_SOCKET) {
-		printf("accept failed with error: %d\n", WSAGetLastError());
-		closesocket(ListenSocket);
-		WSACleanup();
-		return 1;
-	}
-
-	// No longer need server socket
-	closesocket(ListenSocket);
-
-	// Receive until the peer shuts down the connection
-	do {
-
-		iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
-		if (iResult > 0) {
-			printf("Bytes received: %d\n", iResult);
-
-			// Echo the buffer back to the sender
-			iSendResult = send(ClientSocket, recvbuf, iResult, 0);
-			if (iSendResult == SOCKET_ERROR) {
-				printf("send failed with error: %d\n", WSAGetLastError());
-				closesocket(ClientSocket);
-				WSACleanup();
-				return 1;
+		//add new client
+		int freeSocket = 0;
+		for (; freeSocket < MAX_CLIENTS && clientSocket[freeSocket] != INVALID_SOCKET; freeSocket++){}
+		if (freeSocket < MAX_CLIENTS)
+		{
+			clientSocket[freeSocket] = accept(ListenSocket, NULL, NULL);
+			if (clientSocket[freeSocket] == INVALID_SOCKET) {
+				//printf("accept failed with error: %d\n", WSAGetLastError());
+				//closesocket(ListenSocket);
+				//WSACleanup();
+				//return 1;
 			}
-			printf("Bytes sent: %d\n", iSendResult);
 		}
-		else if (iResult == 0)
-			printf("Connection closing...\n");
-		else  {
-			printf("recv failed with error: %d\n", WSAGetLastError());
-			closesocket(ClientSocket);
-			WSACleanup();
-			return 1;
+		//read from clients
+		for (int cClientSocket = 0; cClientSocket < MAX_CLIENTS; cClientSocket++)
+		{
+			if (clientSocket[cClientSocket] != INVALID_SOCKET)
+			{
+				ReciveMessage inMessage;
+
+				char * charInMessage = (char*)&inMessage;
+				do {
+					recvbuf[0] = '\0';
+					iResult = recv(clientSocket[cClientSocket], charInMessage, sizeof(inMessage), 0);
+					if (iResult > 0) {
+						printf("Bytes received: %d: %s\n", iResult,inMessage.firstName);
+
+						// Echo the buffer back to the sender
+						iSendResult = send(clientSocket[cClientSocket], charInMessage, sizeof(inMessage), 0);
+						if (iSendResult == SOCKET_ERROR) {
+							printf("send failed with error: %d\n", WSAGetLastError());
+							closesocket(clientSocket[cClientSocket]);
+							WSACleanup();
+							return 1;
+						}
+						printf("Bytes sent: %d\n", iSendResult);
+						break;
+					}
+					else if (iResult == 0)
+					{
+						printf("Connection closing...\n");
+						closesocket(ClientSocket);
+						clientSocket[cClientSocket] = INVALID_SOCKET;
+					}
+					else {
+						printf("recv failed with error: %d\n", WSAGetLastError());
+						//closesocket(ClientSocket);
+						//WSACleanup();
+						//return 1;
+					}
+
+				} while (iResult > 0);
+			}
 		}
+		// No longer need server socket
+		//closesocket(ListenSocket);
 
-	} while (iResult > 0);
-
-	// shutdown the connection since we're done
-	iResult = shutdown(ClientSocket, SD_SEND);
-	if (iResult == SOCKET_ERROR) {
-		printf("shutdown failed with error: %d\n", WSAGetLastError());
-		closesocket(ClientSocket);
-		WSACleanup();
-		return 1;
+		// shutdown the connection since we're done
+		//iResult = shutdown(ClientSocket, SD_SEND);
+		if (iResult == SOCKET_ERROR) {
+			//printf("shutdown failed with error: %d\n", WSAGetLastError());
+			//closesocket(ClientSocket);
+			//WSACleanup();
+			//return 1;
+		}
 	}
-
 	// cleanup
 	closesocket(ClientSocket);
 	WSACleanup();
