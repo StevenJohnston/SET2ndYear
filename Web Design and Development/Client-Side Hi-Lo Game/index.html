@@ -3,8 +3,10 @@
 <head>
 	<title>Hi Lo Game</title>
 	<script type="text/javascript">
-
-	$SJ = function(element) {
+	
+	//var inColorLoop = false;
+	
+	$SJ = function(element,stackLimiter) {
 		if(typeof element == "string")
 		{
 			switch(element.charAt(0))
@@ -22,6 +24,12 @@
 					break;
 			}
 		}
+
+		if(stackLimiter == undefined)
+		{
+			var thisElement = $SJ("#"+element.id,"defined");
+		}
+
 	    return {
 	        innerHTML: function(html) {
 	            element.innerHTML = html;
@@ -55,6 +63,78 @@
 	        value: function()
 	        {
 	        	return element.value;
+	        },
+	        changeColor: function(time,toColor,rewind)
+	        {
+	        	var speed =100;
+	        	var current = 0;
+	        	var last = time/speed;
+	        	var shadeUp = true;
+
+	        	var incrementer = 1;
+	        	var originalColor = thisElement.attr("originalcolor");
+	        	if(originalColor == undefined)
+	        	{
+					originalColor = window.getComputedStyle(element,null).getPropertyValue("background-color");
+	        		thisElement.attr("originalcolor",originalColor);
+	        		thisElement.style("background-color",originalColor);
+	        	}
+	        	var fromColor = originalColor.substring(originalColor.indexOf("(")+1,originalColor.length-1).split(", ");
+	        	if(originalColor[4] != undefined)
+	        	{
+	        		for (var i = fromColor.length - 1; i >= 0; i--) {
+	        			fromColor[i] = 255;
+	        		};
+	        	}
+	        	//var fromColor = element.style.backgroundColor;
+
+	        	//var fromColor = toColor.substring(4,toColor.length-1).split(",");
+	        	var toColor = toColor.substring(4,toColor.length-1).split(",");
+
+
+	        	//if(!inColorLoop)
+	        	if(originalColor == element.style.backgroundColor)
+	        	{
+	        		var loop = setInterval(animateColor,speed);
+	        	}
+	        	function animateColor()
+	        	{
+	        		//inColorLoop =true;
+	        		//element.setAttribute("colorchange","1");
+					thisElement.attr("colorchange","1");
+	        		element.style.backgroundColor = "rgb(" +((parseInt(fromColor[0]) + parseInt((parseInt(toColor[0]) - parseInt(fromColor[0]))/last)*current) + "," +
+	        			                                     (parseInt(fromColor[1]) + parseInt((parseInt(toColor[1]) - parseInt(fromColor[1]))/last)*current) + "," +
+	        			                                     (parseInt(fromColor[2]) + parseInt((parseInt(toColor[2]) - parseInt(fromColor[2]))/last)*current)) + ")" ;
+					current+= incrementer;
+					if(current >=last && shadeUp == true)
+					{
+						incrementer = -1;
+						shadeUp = false;
+						if(rewind == undefined)
+						{
+							element.style.backgroundColor = originalColor;
+	        				//inColorLoop =false;
+							clearInterval(loop);
+						}
+					}
+					else if(current <= 0 && shadeUp == false)
+					{
+						element.style.backgroundColor = originalColor;
+	        			//inColorLoop =false;
+						clearInterval(loop);
+					}
+	        	}
+	        },
+	        attr: function(name,value)
+	        {
+	        	if(value == undefined)
+	        	{
+	        		return element.getAttribute(name);
+	        	}
+	        	else
+	        	{
+		        	element.setAttribute(name,value);
+	        	}
 	        }
 	    }
 	};
@@ -63,7 +143,9 @@
 
 
 	<script type="text/javascript">
-	//$SJ("#btnMax").innerHTML("this aws");
+	var max;
+	var min;
+	var answer;
 	$SJ("window").ready(function()
 	{
 		$SJ("#btnName").click(function(){
@@ -77,13 +159,15 @@
 		});
 
 		$SJ("#btnMax").click(function(){
-			var max = $SJ("#txtMax").value();
-			if(/^\d+$/.test(max))
+			var maxInput = $SJ("#txtMax").value();
+			if(/^\d+$/.test(maxInput))
 			{
 				$SJ("#divMax").style("display","none");
 				$SJ("#divGame").style("display","block");
 				$SJ("#lblMin").innerHTML(1);
-				$SJ("#lblMax").innerHTML(max);
+				$SJ("#lblMax").innerHTML(maxInput);
+				max = maxInput;
+				answer = Math.floor(Math.random()*maxInput+1);
 			}
 		});
 
@@ -91,10 +175,22 @@
 			var guess = $SJ("#txtguess").value();
 			if(/^\d+$/.test(guess))
 			{
-				alert("guess");
+				if(guess <= min)
+				{
+					$SJ("#divResult").innerHTML("<h2>Number Entered it below Range<h2>");
+					$SJ("#divResult").changeColor(1000,"rgb(0,204,0)","rewind");
+				}
+				else if(guess >=max)
+				{
+					$SJ("#divResult").innerHTML("<h2>Number Entered it above Range<h2>");
+					$SJ("#divResult").changeColor(1000,"rgb(0,204,0)","rewind");
+				}
+				else
+				{
+
+				}
 			}
 		});
-
 	});	
 	</script>
 </head>
@@ -110,12 +206,14 @@
 	</div>
 	<div id="divGame" style="display:none">
 		<div id="divRange">
-			select a number between <label id="lblMin"></lable> and <label id="lblMax"></lable>
+			select a number between 
+			<label id="lblMin"></label> and 
+			<label id="lblMax"></label>
 		</div>
 
 		<div id="divGuess">
 			<input type="text" id="txtguess">
-			<button id="btnGuess">
+			<button id="btnGuess">Guess</button>
 		</div>
 
 		<div id="divResult">
