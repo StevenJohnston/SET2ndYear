@@ -7,6 +7,7 @@
 #include <ws2tcpip.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "Database.h"
 
 // Need to link with Ws2_32.lib
 #pragma comment (lib, "Ws2_32.lib")
@@ -17,25 +18,22 @@
 #define MAX_CLIENTS 64
 using namespace std;
 
-struct ServerCall
-{
-	int callType;
-	int memberId;
-	char firstName[32];
-	char lastName[32];
-	char dOB[11];
-} typedef ServerCall;
-
 struct ClientCall
 {
 	int error;
 	char message[32];
 } typedef ClientCall;
 
+struct memberRecord
+{
+	int memberId;
+	char firstName[32];
+	char lastName[32];
+	char dOB[11];
+}typedef memberRecord;
+
 int __cdecl main(void)
 {
-	
-
 	SOCKET clientSocket[MAX_CLIENTS];
 	for (int x = 0; x < MAX_CLIENTS; x++)
 	{
@@ -143,7 +141,8 @@ int __cdecl main(void)
 					recvbuf[0] = '\0';
 					iResult = recv(clientSocket[cClientSocket], charInMessage, sizeof(ServerCall), 0);
 					if (iResult > 0) {
-						//printf("Bytes received: %d: %s\n", iResult,inMessage.firstName);
+						
+						printf("Bytes received: %d: %s\n", iResult,inMessage.firstName);
 
 						// Echo the buffer back to the sender
 						iSendResult = send(clientSocket[cClientSocket], charOutMessage, sizeof(ClientCall), 0);

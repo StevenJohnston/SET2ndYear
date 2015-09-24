@@ -8,6 +8,7 @@
 #include <string>
 #include <iostream>
 #include <time.h>
+#include <regex>
 
 
 // Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
@@ -121,23 +122,55 @@ int __cdecl main(int argc, char **argv)
 
 	int menuSelection = getNum(1,4);
 	int insertQuantity;
+	ServerCall memberUpdate;
+	memberUpdate.callType = menuSelection;
+
+	regex name("[a-zA-Z]+");
+	regex date("(\\d{2})\\/(\\d{2})(?:\\/?(\\d{4}))?");
 	switch (menuSelection)
 	{
 	case 1:
 		cout << "How many Random records would you like to input:" << endl;
-		insertQuantity = getNum(1,40000);
-		insertMany(ConnectSocket,insertQuantity);
+		insertQuantity = getNum(1, 40000);
+		insertMany(ConnectSocket, insertQuantity);
 		cout << "** Begining to insert " << insertQuantity << " records, ***NOTE*** If the server DB reaches 40,000 records during this process, this process will be stopped with notic **" << endl;
 		break;
 	case 2:
 		cout << "Member id to update:" << endl;
-			
-		cout << "New First Name:" << endl;
-		cout << "New Last Name:" << endl;
-		cout << "New Date of Birth:" << endl;
+		memberUpdate.memberId = getNum(1, 40000);
+		cin.ignore();
+		for (;;){
+			cout << "New First Name:" << endl;
+			cin.getline(memberUpdate.firstName, sizeof(memberUpdate.firstName));
+			if (regex_match(memberUpdate.firstName, name))
+			{
+				break;
+			}
+		}
+		for (;;) {
+			cout << "New Last Name:" << endl;
+			cin.getline(memberUpdate.lastName, sizeof(memberUpdate.lastName));
+			if (regex_match(memberUpdate.lastName, name))
+			{
+				break;
+			}
+		}
+		for (;;) {
+			cout << "New Date of Birth:" << endl;
+			cin.getline(memberUpdate.dOB, sizeof(memberUpdate.dOB));
+			cin.clear();
+			cin.ignore(100, '\n');
+			if (regex_match(memberUpdate.dOB, date))
+			{
+				break;
+			}
+		}
 
 		break;
 	case 3:
+		cout << "Member id to find:" << endl;
+		memberUpdate.memberId = getNum(1, 40000);
+		cin.ignore(10000, '\n');
 		break;
 	case 4:
 		break;
