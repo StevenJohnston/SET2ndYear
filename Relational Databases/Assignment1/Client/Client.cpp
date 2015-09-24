@@ -22,19 +22,25 @@
 
 using namespace std;
 
-struct ServerCall
+struct MemberRecord
 {
-	int callType;
 	int memberId;
 	char firstName[32];
 	char lastName[32];
 	char dOB[11];
+}typedef MemberRecord;
+
+struct ServerCall
+{
+	int callType;
+	MemberRecord member;
 } typedef ServerCall;
 
 struct ClientCall
 {
 	int error;
 	char message[32];
+	MemberRecord member;
 } typedef ClientCall;
 
 bool insertMany(SOCKET ConnectSocket, int quantity);
@@ -137,30 +143,30 @@ int __cdecl main(int argc, char **argv)
 		break;
 	case 2:
 		cout << "Member id to update:" << endl;
-		memberUpdate.memberId = getNum(1, 40000);
+		memberUpdate.member.memberId = getNum(1, 40000);
 		cin.ignore();
 		for (;;){
 			cout << "New First Name:" << endl;
-			cin.getline(memberUpdate.firstName, sizeof(memberUpdate.firstName));
-			if (regex_match(memberUpdate.firstName, name))
+			cin.getline(memberUpdate.member.firstName, sizeof(memberUpdate.member.firstName));
+			if (regex_match(memberUpdate.member.firstName, name))
 			{
 				break;
 			}
 		}
 		for (;;) {
 			cout << "New Last Name:" << endl;
-			cin.getline(memberUpdate.lastName, sizeof(memberUpdate.lastName));
-			if (regex_match(memberUpdate.lastName, name))
+			cin.getline(memberUpdate.member.lastName, sizeof(memberUpdate.member.lastName));
+			if (regex_match(memberUpdate.member.lastName, name))
 			{
 				break;
 			}
 		}
 		for (;;) {
 			cout << "New Date of Birth:" << endl;
-			cin.getline(memberUpdate.dOB, sizeof(memberUpdate.dOB));
+			cin.getline(memberUpdate.member.dOB, sizeof(memberUpdate.member.dOB));
 			cin.clear();
 			cin.ignore(100, '\n');
-			if (regex_match(memberUpdate.dOB, date))
+			if (regex_match(memberUpdate.member.dOB, date))
 			{
 				break;
 			}
@@ -169,8 +175,7 @@ int __cdecl main(int argc, char **argv)
 		break;
 	case 3:
 		cout << "Member id to find:" << endl;
-		memberUpdate.memberId = getNum(1, 40000);
-		cin.ignore(10000, '\n');
+		findMember(ConnectSocket,getNum(1, 40000));
 		break;
 	case 4:
 		break;
@@ -241,6 +246,7 @@ bool insertMany(SOCKET ConnectSocket, int quantity)
 	{
 		memset(&newRecord, 0, sizeof(ServerCall));
 		randomServerCall(&newRecord);
+		newRecord.callType = 1;
 
 		// Send an initial buffer
 		
@@ -315,21 +321,25 @@ int getNum(int min, int max)
 void randomServerCall(ServerCall *message)
 {
 	char characters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	int firstNameLen = rand() % 32 + 1;
-	int lastNameLen = rand() % 32 + 1;
+	int firstNameLen = rand() % 31 + 1;
+	int lastNameLen = rand() % 31 + 1;
 	for (int i = 0; i < firstNameLen || i < lastNameLen; i++)
 	{
 		if (i < firstNameLen)
 		{
-			message->firstName[i] = characters[rand() % 52];
+			message->member.firstName[i] = characters[rand() % 52];
 		}
 		if (i < lastNameLen)
 		{
-			message->lastName[i] = characters[rand() % 52];
+			message->member.lastName[i] = characters[rand() % 52];
 		}
 	}
 	int year = rand() % 115 + 1900;
 	int month = rand() % 12 + 1;
 	int day = rand() % 28 + 1;
-	sprintf_s(message->dOB,"%02d/%02d/%04d",month,day,year);
+	sprintf_s(message->member.dOB,"%02d/%02d/%04d",month,day,year);
+}
+bool findMember(SOCKET ConnectSocket,int memberId)
+{
+
 }

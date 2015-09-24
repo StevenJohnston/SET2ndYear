@@ -5,8 +5,8 @@
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#include <stdlib.h>
-#include <stdio.h>
+//#include <stdlib.h>
+//#include <stdio.h>
 #include "Database.h"
 
 // Need to link with Ws2_32.lib
@@ -24,16 +24,12 @@ struct ClientCall
 	char message[32];
 } typedef ClientCall;
 
-struct memberRecord
-{
-	int memberId;
-	char firstName[32];
-	char lastName[32];
-	char dOB[11];
-}typedef memberRecord;
 
 int __cdecl main(void)
 {
+	Database memberDB;
+
+
 	SOCKET clientSocket[MAX_CLIENTS];
 	for (int x = 0; x < MAX_CLIENTS; x++)
 	{
@@ -142,7 +138,8 @@ int __cdecl main(void)
 					iResult = recv(clientSocket[cClientSocket], charInMessage, sizeof(ServerCall), 0);
 					if (iResult > 0) {
 						
-						printf("Bytes received: %d: %s\n", iResult,inMessage.firstName);
+						//printf("Bytes received: %d: %s\n", iResult,inMessage.firstName);
+						memberDB.doStatment(inMessage);
 
 						// Echo the buffer back to the sender
 						iSendResult = send(clientSocket[cClientSocket], charOutMessage, sizeof(ClientCall), 0);
