@@ -16,19 +16,11 @@
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "27015"
 #define MAX_CLIENTS 64
-using namespace std;
-
-struct ClientCall
-{
-	int error;
-	char message[32];
-} typedef ClientCall;
 
 
 int __cdecl main(void)
 {
 	Database memberDB;
-
 
 	SOCKET clientSocket[MAX_CLIENTS];
 	for (int x = 0; x < MAX_CLIENTS; x++)
@@ -138,8 +130,13 @@ int __cdecl main(void)
 					iResult = recv(clientSocket[cClientSocket], charInMessage, sizeof(ServerCall), 0);
 					if (iResult > 0) {
 						
-						//printf("Bytes received: %d: %s\n", iResult,inMessage.firstName);
-						memberDB.doStatment(inMessage);
+						//printf("Bytes received: %d: %s\n", iResult,inMessage.member.firstName);
+						outMessage = memberDB.doStatment(inMessage);
+						if (outMessage.member.memberId == -1)
+						{
+							outMessage.error = 1;
+							//outMessage.message = "..";
+						}
 
 						// Echo the buffer back to the sender
 						iSendResult = send(clientSocket[cClientSocket], charOutMessage, sizeof(ClientCall), 0);

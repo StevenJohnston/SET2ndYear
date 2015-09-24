@@ -39,15 +39,15 @@ struct ServerCall
 struct ClientCall
 {
 	int error;
-	char message[32];
+	char message[64];
 	MemberRecord member;
 } typedef ClientCall;
 
 bool insertMany(SOCKET ConnectSocket, int quantity);
 int getNum(int min, int max);
-void randomServerCall(ServerCall *message);
-
-
+void randomServerCall(ServerCall *message); 
+bool findMember(SOCKET ConnectSocket, int memberId);
+bool updateMember(SOCKET ConnectSocket, MemberRecord member);
 
 int __cdecl main(int argc, char **argv)
 {
@@ -128,8 +128,7 @@ int __cdecl main(int argc, char **argv)
 
 	int menuSelection = getNum(1,4);
 	int insertQuantity;
-	ServerCall memberUpdate;
-	memberUpdate.callType = menuSelection;
+	MemberRecord memberUpdate;
 
 	regex name("[a-zA-Z]+");
 	regex date("(\\d{2})\\/(\\d{2})(?:\\/?(\\d{4}))?");
@@ -143,35 +142,35 @@ int __cdecl main(int argc, char **argv)
 		break;
 	case 2:
 		cout << "Member id to update:" << endl;
-		memberUpdate.member.memberId = getNum(1, 40000);
+		memberUpdate.memberId = getNum(1, 40000);
 		cin.ignore();
 		for (;;){
 			cout << "New First Name:" << endl;
-			cin.getline(memberUpdate.member.firstName, sizeof(memberUpdate.member.firstName));
-			if (regex_match(memberUpdate.member.firstName, name))
+			cin.getline(memberUpdate.firstName, sizeof(memberUpdate.firstName));
+			if (regex_match(memberUpdate.firstName, name))
 			{
 				break;
 			}
 		}
 		for (;;) {
 			cout << "New Last Name:" << endl;
-			cin.getline(memberUpdate.member.lastName, sizeof(memberUpdate.member.lastName));
-			if (regex_match(memberUpdate.member.lastName, name))
+			cin.getline(memberUpdate.lastName, sizeof(memberUpdate.lastName));
+			if (regex_match(memberUpdate.lastName, name))
 			{
 				break;
 			}
 		}
 		for (;;) {
 			cout << "New Date of Birth:" << endl;
-			cin.getline(memberUpdate.member.dOB, sizeof(memberUpdate.member.dOB));
-			cin.clear();
-			cin.ignore(100, '\n');
-			if (regex_match(memberUpdate.member.dOB, date))
+			cin.getline(memberUpdate.dOB, sizeof(memberUpdate.dOB));
+			if (regex_match(memberUpdate.dOB, date))
 			{
 				break;
 			}
+			cin.clear();
+			cin.ignore(100, '\n');
 		}
-
+		updateMember(ConnectSocket,memberUpdate);
 		break;
 	case 3:
 		cout << "Member id to find:" << endl;
@@ -182,49 +181,6 @@ int __cdecl main(int argc, char **argv)
 	default:
 		break;
 	}
-
-
-	/*
-	for (int i = 0 ; i < 5; i++)
-	{
-		printf("asd\m");
-		// Send an initial buffer
-		//for (int i = 0; i < 5; i++)
-		{
-			iResult = send(ConnectSocket, toSend, sizeof(ReciveMessage), 0);
-			if (iResult == SOCKET_ERROR) {
-				printf("send failed with error: %d\n", WSAGetLastError());
-				//closesocket(ConnectSocket);
-				//WSACleanup();
-				//return 1;
-			}
-		}
-		printf("Bytes Sent: %ld\n", iResult);
-
-		// shutdown the connection since no more data will be sent
-		//iResult = shutdown(ConnectSocket, SD_SEND);
-		if (iResult == SOCKET_ERROR) {
-			printf("shutdown failed with error: %d\n", WSAGetLastError());
-			closesocket(ConnectSocket);
-			WSACleanup();
-			return 1;
-		}
-		// Receive until the peer closes the connection
-		do {
-
-			iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
-			if (iResult > 0)
-			{
-				printf("Bytes received: %d\n", iResult);
-				break;
-			}
-			else if (iResult == 0)
-				printf("Connection closed\n");
-			else
-				printf("recv failed with error: %d\n", WSAGetLastError());
-
-		} while (iResult > 0);
-	}*/
 	// cleanup
 	closesocket(ConnectSocket);
 	WSACleanup();
@@ -234,10 +190,8 @@ int __cdecl main(int argc, char **argv)
 bool insertMany(SOCKET ConnectSocket, int quantity)
 {
 	int iResult = 0;
-	ServerCall newRecord = { 1,1,"steven","johnston","9/21/2015" };
+	ServerCall newRecord;
 	char* charNewRecord = (char*)&newRecord;
-
-	
 
 	ClientCall fromServer;
 	char* charFromServer = (char*)&fromServer;
@@ -275,7 +229,10 @@ bool insertMany(SOCKET ConnectSocket, int quantity)
 			if (iResult > 0)
 			{
 				//printf("message From server %s\n", fromServer.message);
-
+				if (fromServer.error != 0)
+				{
+					cout << fromServer.message << endl;
+				}
 				break;
 			}
 			else if (iResult == 0)
@@ -341,5 +298,123 @@ void randomServerCall(ServerCall *message)
 }
 bool findMember(SOCKET ConnectSocket,int memberId)
 {
+	int iResult = 0;
+	ServerCall findRecord;
+	char* charFindRecord = (char*)&findRecord;
 
+	ClientCall fromServer;
+	char* charFromServer = (char*)&fromServer;
+
+	memset(&findRecord, 0, sizeof(ServerCall));
+	findRecord.member.memberId = memberId;
+	findRecord.callType = 3;
+
+	// Send an initial buffer
+
+	iResult = send(ConnectSocket, charFindRecord, sizeof(ServerCall), 0);
+	if (iResult == SOCKET_ERROR) {
+		printf("send failed with error: %d\n", WSAGetLastError());
+		//closesocket(ConnectSocket);
+		//WSACleanup();
+		//return 1;
+	}
+	//printf("Bytes Sent: %ld\n", iResult);
+
+	// shutdown the connection since no more data will be sent
+	//iResult = shutdown(ConnectSocket, SD_SEND);
+	if (iResult == SOCKET_ERROR) {
+		printf("shutdown failed with error: %d\n", WSAGetLastError());
+		closesocket(ConnectSocket);
+		WSACleanup();
+		return 1;
+	}
+	// Receive until the peer closes the connection
+	do {
+
+		iResult = recv(ConnectSocket, charFromServer, sizeof(ClientCall), 0);
+		//fromServer = *reinterpret_cast<ClientCall*>(charFromServer);
+		if (iResult > 0)
+		{
+			//printf("message From server %s\n", fromServer.message);
+			if (fromServer.error != 0)
+			{
+				cout << fromServer.message << endl;
+			}
+			else
+			{
+				cout << "Found member \n Member id: " << fromServer.member.memberId
+					<< "\n First name: " << fromServer.member.firstName
+					<< "\n Last name: " << fromServer.member.lastName
+					<< "\n Date Of Birth name: " << fromServer.member.dOB << endl;
+			}
+			break;
+		}
+		else if (iResult == 0)
+			printf("Connection closed\n");
+		else
+			printf("recv failed with error: %d\n", WSAGetLastError());
+
+	} while (iResult > 0);
+	cout << "Find Done" << endl;
+	return true;
+}
+
+bool updateMember(SOCKET ConnectSocket, MemberRecord member)
+{
+	int iResult = 0;
+	ServerCall upDateRecord;
+	char* charFindRecord = (char*)&upDateRecord;
+
+	ClientCall fromServer;
+	char* charFromServer = (char*)&fromServer;
+
+	memset(&upDateRecord, 0, sizeof(ServerCall));
+	upDateRecord.member = member;
+	upDateRecord.callType = 2;
+
+	// Send an initial buffer
+
+	iResult = send(ConnectSocket, charFindRecord, sizeof(ServerCall), 0);
+	if (iResult == SOCKET_ERROR) {
+		printf("send failed with error: %d\n", WSAGetLastError());
+		//closesocket(ConnectSocket);
+		//WSACleanup();
+		//return 1;
+	}
+	//printf("Bytes Sent: %ld\n", iResult);
+
+	// shutdown the connection since no more data will be sent
+	//iResult = shutdown(ConnectSocket, SD_SEND);
+	if (iResult == SOCKET_ERROR) {
+		printf("shutdown failed with error: %d\n", WSAGetLastError());
+		closesocket(ConnectSocket);
+		WSACleanup();
+		return 1;
+	}
+	// Receive until the peer closes the connection
+	do {
+
+		iResult = recv(ConnectSocket, charFromServer, sizeof(ClientCall), 0);
+		//fromServer = *reinterpret_cast<ClientCall*>(charFromServer);
+		if (iResult > 0)
+		{
+			//printf("message From server %s\n", fromServer.message);
+			if (fromServer.error != 0)
+			{
+				cout << fromServer.message << endl;
+			}
+			else
+			{
+				cout << "Member update successful" << endl;
+			}
+			break;
+		}
+		else if (iResult == 0)
+			printf("Connection closed\n");
+		else
+			printf("recv failed with error: %d\n", WSAGetLastError());
+
+	} while (iResult > 0);
+	cout << "Find Done" << endl;
+	return true;
 }
