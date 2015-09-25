@@ -1,3 +1,10 @@
+/*
+File: Client.h
+Name: Matthew Warren, Steven johnston
+Assignment: Client Server I/O Database Assignment #1
+Date: 9/25/2015
+Description: includes, defines, enums, structs, and prototypes required for Client
+*/
 #pragma once
 #include <string.h>
 #include <stdlib.h>
@@ -14,6 +21,21 @@
 
 #define MAX_RECORD_COUNT 40000
 //#include <thread>
+
+enum StatmentType
+{
+	zero,
+	insert,
+	update,
+	find
+}typedef StatmentType;
+
+enum DatabaseError
+{
+	noError,
+	databaseFull,
+	memberIdPass,
+}typedef DatabaseError;
 
 
 struct MemberRecord
@@ -62,63 +84,6 @@ private:
 		
 		return db->ThreadStart(db);
 	};
-	DWORD ThreadStart(Database* database)
-	{
-
-		//read from file
-		std::ifstream myfileRead;
-
-		myfileRead.open("member.db", std::fstream::binary | std::ofstream::in);
-		//const char* wPointer = reinterpret_cast<const char*>(&(database->memberTable[lastUpdatedIndex]));
-		std::streampos fileSize;
-
-		myfileRead.seekg(0, std::ios::end);
-		fileSize = myfileRead.tellg();
-		myfileRead.seekg(0, std::ios::beg);
-
-		for (int i = 0; i < fileSize / (16*5); i++)
-		{
-			MemberRecord memberFromFile;
-			char* charFromFile = (char*)&memberFromFile;
-			myfileRead.read(charFromFile,sizeof(memberFromFile));
-			database->memberTable.push_back(memberFromFile);
-		}
-		firstEmptyIndex = database->memberTable.size();
-		lastUpdatedIndex = database->memberTable.size();
-		//write to file
-		for (;;)
-		{
-			if (database->memberTable.size() != 0)
-			{
-				if (lastUpdatedIndex < database->memberTable.size())
-				{
-					std::ofstream myfile;
-					myfile.open("member.db", std::ios::binary | std::ofstream::app);
-					myfile.seekp(0, std::ios::end);
-					const char* pointer = reinterpret_cast<const char*>(&(database->memberTable[lastUpdatedIndex]));
-					//lastUpdatedIndex++;
-					int sizeSnapshot = database->memberTable.size();
-					size_t bytes = (sizeSnapshot - lastUpdatedIndex) * sizeof(database->memberTable[0]);
-					lastUpdatedIndex = sizeSnapshot;
-					myfile.write(pointer, bytes);
-					myfile.close();
-				}
-			}
-			
-			if (updateQue.size() != 0)
-			{
-				std::fstream fileAppMid;
-				fileAppMid.open("member.db", std::fstream::in | std::fstream::out | std::fstream::binary);
-				int memberId = updateQue.front();
-				updateQue.pop_front();
-				fileAppMid.seekp(getMemberIndex(memberId) * (16 * 5));
-				fileAppMid.write((char*)&(database->memberTable[getMemberIndex(memberId)]),sizeof(MemberRecord));
-			}
-		}
-
-		//myfile << "Writing this to a file.\n";
-		//myfile.close();
-		return 0;
-	}
+	DWORD ThreadStart(Database* database);
 };
 

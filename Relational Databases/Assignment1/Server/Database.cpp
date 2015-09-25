@@ -1,16 +1,38 @@
+/*
+File: Database.cpp
+Name: Matthew Warren, Steven johnston
+Assignment: Client Server I/O Database Assignment #1
+Date: 9/25/2015
+Description: 
+	handler for all database access and file I/O
+*/
 #include "Database.h"
+
+/*
+Function Name: doStatment
+description: Access DB according to paramerter. Insert, Update, and find
+parameter:
+	ServerCall statment: 
+		int calltype: type of call to make on DB with member info
+		MemberRecord member: member info 
+return:
+	ClientCall: 
+		int error: error status 
+		char message[64]: error message
+		MemberRecord member: If calltype was find then return new member info
+*/
 ClientCall Database::doStatment(ServerCall statment)
 {
 	ClientCall returnClientCall = { 0,"",{-1,"","",""} };
 	switch (statment.callType)
 	{
-	case 1:
+	case StatmentType::insert:
 		returnClientCall = insert(statment);
 		break;
-	case 2:
+	case StatmentType::update:
 		returnClientCall = update(statment);
 		break;
-	case 3:
+	case StatmentType::find:
 		returnClientCall = find(statment);
 		break;
 	default:
@@ -18,12 +40,12 @@ ClientCall Database::doStatment(ServerCall statment)
 	}
 	switch (returnClientCall.error)
 	{
-	case 0:// No error
+	case DatabaseError::noError:// No error
 		break;
-	case 1: //database full
+	case DatabaseError::databaseFull: //database full
 		strcpy_s(returnClientCall.message, "Database has 40,000 records (Full)");
 		break;
-	case 2: //member id pass last filled index
+	case DatabaseError::memberIdPass: //member id pass last filled index
 		strcpy_s(returnClientCall.message, "Member Id does not exist in database");
 		break;
 	default:
@@ -31,6 +53,12 @@ ClientCall Database::doStatment(ServerCall statment)
 	}
 	return returnClientCall;
 }
+/*
+Function Name: Database
+description: Initialize DB. Reads file into memory then writes new/updated data to file.
+parameter:
+return:
+*/
 Database::Database()
 {
 	memberTable.reserve(MAX_RECORD_COUNT);
@@ -50,7 +78,19 @@ Database::Database()
 Database::~Database()
 {
 }
-
+/*
+Function Name: insert
+description: insert statment.member into members DB
+parameter:
+ServerCall statment:
+int calltype: type of call to make on DB with member info
+MemberRecord member: member info
+return:
+ClientCall:
+int error: error status
+char message[64]: error message
+MemberRecord member: If calltype was find then return new member info
+*/
 ClientCall Database::insert(ServerCall statement)
 {
 	ClientCall returnClientCall = { 0,"",{ -1,"","","" } };
@@ -78,7 +118,7 @@ ClientCall Database::update(ServerCall statement)
 	}
 	else
 	{
-		returnClientCall.error = 2;
+		returnClientCall.error = DatabaseError::memberIdPass;
 	}
 	return returnClientCall;
 }
@@ -91,7 +131,7 @@ ClientCall Database::find(ServerCall statement)
 	}
 	else
 	{
-		returnClientCall.error = 2;
+		returnClientCall.error = DatabaseError::memberIdPass;
 	}
 	return returnClientCall;
 }
@@ -104,3 +144,61 @@ int Database::getMemberIndex(int memberId)
 	return memberId - 1;
 }
 
+DWORD Database::ThreadStart(Database* database)
+{
+
+	//read from file
+	std::ifstream myfileRead;
+
+	myfileRead.open("member.db", std::fstream::binary | std::ofstream::in);
+	//const char* wPointer = reinterpret_cast<const char*>(&(database->memberTable[lastUpdatedIndex]));
+	std::streampos fileSize;
+
+	myfileRead.seekg(0, std::ios::end);
+	fileSize = myfileRead.tellg();
+	myfileRead.seekg(0, std::ios::beg);
+
+	for (int i = 0; i < fileSize / sizeof(MemberRecord); i++)
+	{
+		MemberRecord memberFromFile;
+		char* charFromFile = (char*)&memberFromFile;
+		myfileRead.read(charFromFile, sizeof(memberFromFile));
+		database->memberTable.push_back(memberFromFile);
+	}
+	firstEmptyIndex = database->memberTable.size();
+	lastUpdatedIndex = database->memberTable.size();
+	//write to file
+	for (;;)
+	{
+		if (database->memberTable.size() != 0)
+		{
+			if (lastUpdatedIndex < database->memberTable.size())
+			{
+				std::ofstream myfile;
+				myfile.open("memberDB", std::ios::binary | std::ofstream::app);
+				myfile.seekp(0, std::ios::end);
+				const char* pointer = reinterpret_cast<const char*>(&(database->memberTable[lastUpdatedIndex]));
+				//lastUpdatedIndex++;
+				int sizeSnapshot = database->memberTable.size();
+				size_t bytes = (sizeSnapshot - lastUpdatedIndex) * sizeof(database->memberTable[0]);
+				lastUpdatedIndex = sizeSnapshot;
+				myfile.write(pointer, bytes);
+				myfile.close();
+			}
+		}
+
+		if (updateQue.size() != 0)
+		{
+			std::fstream fileAppMid;
+			fileAppMid.open("member.db", std::fstream::in | std::fstream::out | std::fstream::binary);
+			int memberId = updateQue.front();
+			updateQue.pop_front();
+			fileAppMid.seekp(getMemberIndex(memberId) * sizeof(MemberRecord));
+			fileAppMid.write((char*)&(database->memberTable[getMemberIndex(memberId)]), sizeof(MemberRecord));
+		}
+	}
+
+	//myfile << "Writing this to a file.\n";
+	//myfile.close();
+	return 0;
+}
