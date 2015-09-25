@@ -82,14 +82,14 @@ Database::~Database()
 Function Name: insert
 description: insert statment.member into members DB
 parameter:
-ServerCall statment:
-int calltype: type of call to make on DB with member info
-MemberRecord member: member info
+	ServerCall statment:
+		int calltype: 
+		MemberRecord member: member info to insert to database
 return:
 ClientCall:
-int error: error status
-char message[64]: error message
-MemberRecord member: If calltype was find then return new member info
+	int error: error status
+	char message[64]: error message
+	MemberRecord member: 
 */
 ClientCall Database::insert(ServerCall statement)
 {
@@ -107,6 +107,21 @@ ClientCall Database::insert(ServerCall statement)
 	}
 	return returnClientCall;
 }
+/*
+Function Name: update
+description: Update member using member as new member info and positioning
+parameter:
+	ServerCall statment:
+		int calltype:
+		MemberRecord member: 
+			memberId: location in database of record to update
+			rest of fields: new data to replace old record
+return:
+ClientCall:
+	int error: error status
+	char message[64]: error message
+	MemberRecord member: 
+*/
 ClientCall Database::update(ServerCall statement)
 {
 	ClientCall returnClientCall = { 0,"",{ -1,"","","" } };
@@ -122,6 +137,19 @@ ClientCall Database::update(ServerCall statement)
 	}
 	return returnClientCall;
 }
+/*
+Function Name: find
+description: find member using member.memberId for indexing
+parameter:
+	ServerCall statment:
+		MemberRecord member:
+			memberId: location in database of record to update
+return:
+ClientCall:
+	int error: error status
+	char message[64]: error message
+	MemberRecord member:
+*/
 ClientCall Database::find(ServerCall statement)
 {
 	ClientCall returnClientCall = { 0,"",{ -1,"","","" } };
@@ -143,8 +171,16 @@ int Database::getMemberIndex(int memberId)
 {
 	return memberId - 1;
 }
-
-DWORD Database::ThreadStart(Database* database)
+/*
+Function Name: fileIOThread
+description: Reads database file on load then looks for new data inserts/updates and runs them on the DB file
+parameter:
+	Database* database: Pointer to the database to give access
+return:
+DWORD:
+	
+*/
+DWORD Database::fileIOThread(Database* database)
 {
 
 	//read from file

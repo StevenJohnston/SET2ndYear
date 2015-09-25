@@ -1,9 +1,9 @@
 /*
-File: Client.h
+File: server.h
 Name: Matthew Warren, Steven johnston
 Assignment: Client Server I/O Database Assignment #1
 Date: 9/25/2015
-Description: includes, defines, enums, structs, and prototypes required for Client
+Description: includes, defines, and prototypes required for Server
 */
 #pragma once
 #undef UNICODE

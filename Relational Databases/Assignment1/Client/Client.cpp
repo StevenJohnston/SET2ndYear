@@ -1,9 +1,9 @@
 /*
-File: Client.h
+File: Client.cpp
 Name: Matthew Warren, Steven johnston
 Assignment: Client Server I/O Database Assignment #1
 Date: 9/25/2015
-Description: includes, defines, enums, structs, and prototypes required for Client
+Description: Client sided simple Databata. insert, update, and find members from server.
 */
 #include "Client.h"
 int __cdecl main(int argc, char **argv)
@@ -150,6 +150,15 @@ int __cdecl main(int argc, char **argv)
 
 	return 0;
 }
+/*
+Function Name: insertMany
+description: Insert many randomly generated member records and send them to database
+parameter:
+	SOCKET ConnectSocket: Connection to server
+	int quantity: Number of new records to create for server
+return:
+	bool: true if no errors
+*/
 bool insertMany(SOCKET ConnectSocket, int quantity)
 {
 	int iResult = 0;
@@ -207,7 +216,15 @@ bool insertMany(SOCKET ConnectSocket, int quantity)
 	std::cout << "insert Done" << std::endl;
 	return true;
 }
-
+/*
+Function Name: getNum
+description: Gets intget from user in range of parameters
+parameter:
+	int min: lowest number user can enter
+	int max: highest number user can enter
+return:
+	int: Valid number the user entered
+*/
 int getNum(int min, int max)
 {
 	std::string input;
@@ -236,7 +253,14 @@ int getNum(int min, int max)
 	} while (enterError);
 	return menuSelection;
 }
-
+/*
+Function Name: randomServerCall
+description: Generates random field for *message->member
+parameter:
+	ServerCall *message: pointer to ServerCall to edit data
+return:
+	void:
+*/
 void randomServerCall(ServerCall *message)
 {
 	char characters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -258,6 +282,15 @@ void randomServerCall(ServerCall *message)
 	int day = rand() % NUM_DAYS + 1;
 	sprintf_s(message->member.dOB,"%02d/%02d/%04d",month,day,year);
 }
+/*
+Function Name: findMember
+description: Calls the server with memberId to get a members data
+parameter:
+	SOCKET ConnectSocket: connection to server
+	int memberId: member id to find
+return:
+	bool: false if no error
+*/
 bool findMember(SOCKET ConnectSocket,int memberId)
 {
 	int iResult = 0;
@@ -271,33 +304,23 @@ bool findMember(SOCKET ConnectSocket,int memberId)
 	findRecord.member.memberId = memberId;
 	findRecord.callType = StatmentType::find;
 
-	// Send an initial buffer
 
 	iResult = send(ConnectSocket, charFindRecord, sizeof(ServerCall), 0);
 	if (iResult == SOCKET_ERROR) {
 		printf("send failed with error: %d\n", WSAGetLastError());
-		//closesocket(ConnectSocket);
-		//WSACleanup();
-		//return 1;
 	}
-	//printf("Bytes Sent: %ld\n", iResult);
 
-	// shutdown the connection since no more data will be sent
-	//iResult = shutdown(ConnectSocket, SD_SEND);
 	if (iResult == SOCKET_ERROR) {
 		printf("shutdown failed with error: %d\n", WSAGetLastError());
 		closesocket(ConnectSocket);
 		WSACleanup();
 		return 1;
 	}
-	// Receive until the peer closes the connection
 	do {
 
 		iResult = recv(ConnectSocket, charFromServer, sizeof(ClientCall), 0);
-		//fromServer = *reinterpret_cast<ClientCall*>(charFromServer);
 		if (iResult > 0)
 		{
-			//printf("message From server %s\n", fromServer.message);
 			if (fromServer.error != 0)
 			{
 				std::cout << fromServer.message << std::endl;
@@ -320,7 +343,14 @@ bool findMember(SOCKET ConnectSocket,int memberId)
 	std::cout << "Find Done" << std::endl;
 	return true;
 }
-
+/*
+Function Name: updateMember
+description: Calls server to update members info
+parameter:
+	SOCKET ConnectSocket: Connection to server
+return:
+	MemberRecord member: future member data
+*/
 bool updateMember(SOCKET ConnectSocket, MemberRecord member)
 {
 	int iResult = 0;
@@ -334,33 +364,23 @@ bool updateMember(SOCKET ConnectSocket, MemberRecord member)
 	upDateRecord.member = member;
 	upDateRecord.callType = StatmentType::update;
 
-	// Send an initial buffer
 
 	iResult = send(ConnectSocket, charFindRecord, sizeof(ServerCall), 0);
 	if (iResult == SOCKET_ERROR) {
 		printf("send failed with error: %d\n", WSAGetLastError());
-		//closesocket(ConnectSocket);
-		//WSACleanup();
-		//return 1;
 	}
-	//printf("Bytes Sent: %ld\n", iResult);
 
 	// shutdown the connection since no more data will be sent
-	//iResult = shutdown(ConnectSocket, SD_SEND);
 	if (iResult == SOCKET_ERROR) {
 		printf("shutdown failed with error: %d\n", WSAGetLastError());
 		closesocket(ConnectSocket);
 		WSACleanup();
 		return 1;
 	}
-	// Receive until the peer closes the connection
 	do {
-
 		iResult = recv(ConnectSocket, charFromServer, sizeof(ClientCall), 0);
-		//fromServer = *reinterpret_cast<ClientCall*>(charFromServer);
 		if (iResult > 0)
 		{
-			//printf("message From server %s\n", fromServer.message);
 			if (fromServer.error != 0)
 			{
 				std::cout << fromServer.message << std::endl;

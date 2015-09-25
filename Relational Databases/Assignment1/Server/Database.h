@@ -1,9 +1,9 @@
 /*
-File: Client.h
+File: Database.h
 Name: Matthew Warren, Steven johnston
 Assignment: Client Server I/O Database Assignment #1
 Date: 9/25/2015
-Description: includes, defines, enums, structs, and prototypes required for Client
+Description: includes, defines, enums, structs, and prototypes required for database object
 */
 #pragma once
 #include <string.h>
@@ -82,8 +82,8 @@ private:
 	{
 		Database* db = (Database*)database;
 		
-		return db->ThreadStart(db);
+		return db->fileIOThread(db);
 	};
-	DWORD ThreadStart(Database* database);
+	DWORD fileIOThread(Database* database);
 };
 
