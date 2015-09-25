@@ -10,18 +10,12 @@ int __cdecl main(int argc, char **argv)
 {
 	srand(time(NULL));
 
-	ServerCall tempMessage = { 1,1,"steven","johnston","9/21/2015" };
-	char* toSend = (char*)&tempMessage;
-
 	WSADATA wsaData;
 	SOCKET ConnectSocket = INVALID_SOCKET;
 	struct addrinfo *result = NULL,
 		*ptr = NULL,
 		hints;
-	char *sendbuf = "this is a test55";
-	char recvbuf[DEFAULT_BUFLEN];
 	int iResult;
-	int recvbuflen = DEFAULT_BUFLEN;
 
 	// Validate the parameters
 	if (argc != 2) {
@@ -60,7 +54,6 @@ int __cdecl main(int argc, char **argv)
 			WSACleanup();
 			return 1;
 		}
-
 		// Connect to server.
 		iResult = connect(ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
 		if (iResult == SOCKET_ERROR) {
@@ -78,29 +71,30 @@ int __cdecl main(int argc, char **argv)
 		WSACleanup();
 		return 1;
 	}
-
-
-
+	//true to disconnect from server
 	bool disconnectServer = false;
 	printf("Connected to server");
+	//loop till server disconnect flag = true
 	for (;!disconnectServer;)
 	{
 		printf("Select statment\n  1.Insert\n  2.Update\n  3.Find\n  4.Exit\n");
+		//get menu select
 		int menuSelection = getNum(1, 4);
 		int insertQuantity;
 		MemberRecord memberUpdate;
-
+		//only letters
 		std::regex name("[a-zA-Z]+");
+		//date format
 		std::regex date("(\\d{2})\\/(\\d{2})(?:\\/?(\\d{4}))?");
 		switch (menuSelection)
 		{
-		case 1:
+		case StatmentType::insert:
 			std::cout << "How many Random records would you like to input:" << std::endl;
 			insertQuantity = getNum(1, MAX_RECORD_COUNT);
 			insertMany(ConnectSocket, insertQuantity);
 			std::cout << "** Begining to insert " << insertQuantity << " records, ***NOTE*** If the server DB reaches 40,000 records during this process, this process will be stopped with notic **" << std::endl;
 			break;
-		case 2:
+		case StatmentType::update:
 			std::cout << "Member id to update:" << std::endl;
 			memberUpdate.memberId = getNum(1, MAX_RECORD_COUNT);
 			std::cin.ignore();
@@ -132,11 +126,11 @@ int __cdecl main(int argc, char **argv)
 			}
 			updateMember(ConnectSocket, memberUpdate);
 			break;
-		case 3:
+		case StatmentType::find:
 			std::cout << "Member id to find:" << std::endl;
 			findMember(ConnectSocket, getNum(1, MAX_RECORD_COUNT));
 			break;
-		case 4:
+		case 4: //exit
 			disconnectServer = true;
 			break;
 		default:
@@ -162,31 +156,24 @@ return:
 bool insertMany(SOCKET ConnectSocket, int quantity)
 {
 	int iResult = 0;
-	ServerCall newRecord;
-	char* charNewRecord = (char*)&newRecord;
+	ServerCall newRecord;//new Servercall
+	char* charNewRecord = (char*)&newRecord;// char* to server call for server calls
 
 	ClientCall fromServer;
 	char* charFromServer = (char*)&fromServer;
 	bool serverError = false;
+	//send quantity amount of calls. end early if server sends error
 	for (int i = 0; i < quantity && !serverError; i++)
 	{
 		memset(&newRecord, 0, sizeof(ServerCall));
 		randomServerCall(&newRecord);
 		newRecord.callType = 1;
 
-		// Send an initial buffer
-		
+		// Send serverCall to server
 		iResult = send(ConnectSocket, charNewRecord, sizeof(ServerCall), 0);
 		if (iResult == SOCKET_ERROR) {
 			printf("send failed with error: %d\n", WSAGetLastError());
-			//closesocket(ConnectSocket);
-			//WSACleanup();
-			//return 1;
 		}
-		//printf("Bytes Sent: %ld\n", iResult);
-
-		// shutdown the connection since no more data will be sent
-		//iResult = shutdown(ConnectSocket, SD_SEND);
 		if (iResult == SOCKET_ERROR) {
 			printf("shutdown failed with error: %d\n", WSAGetLastError());
 			closesocket(ConnectSocket);
@@ -195,7 +182,7 @@ bool insertMany(SOCKET ConnectSocket, int quantity)
 		}
 		// Receive until the peer closes the connection
 		do {
-
+			//get message from server to check for errors
 			iResult = recv(ConnectSocket, charFromServer, sizeof(ClientCall), 0);
 			if (iResult > 0)
 			{
@@ -263,9 +250,11 @@ return:
 */
 void randomServerCall(ServerCall *message)
 {
+	//Letter to pick from
 	char characters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	int firstNameLen = rand() % (sizeof(firstNameLen)-1) + 1;
 	int lastNameLen = rand() % (sizeof(lastNameLen)-1) + 1;
+	//loop letters for first and last name
 	for (int i = 0; i < firstNameLen || i < lastNameLen; i++)
 	{
 		if (i < firstNameLen)
@@ -277,6 +266,7 @@ void randomServerCall(ServerCall *message)
 			message->member.lastName[i] = characters[rand() % sizeof(characters)];
 		}
 	}
+	//randomize date
 	int year = rand() % MAX_AGE + MIN_YEAR;
 	int month = rand() % NUM_MONTHS + 1;
 	int day = rand() % NUM_DAYS + 1;
@@ -304,7 +294,7 @@ bool findMember(SOCKET ConnectSocket,int memberId)
 	findRecord.member.memberId = memberId;
 	findRecord.callType = StatmentType::find;
 
-
+	//Send serverCall with id of member to find
 	iResult = send(ConnectSocket, charFindRecord, sizeof(ServerCall), 0);
 	if (iResult == SOCKET_ERROR) {
 		printf("send failed with error: %d\n", WSAGetLastError());
@@ -317,7 +307,7 @@ bool findMember(SOCKET ConnectSocket,int memberId)
 		return 1;
 	}
 	do {
-
+		//recive error / member info from server
 		iResult = recv(ConnectSocket, charFromServer, sizeof(ClientCall), 0);
 		if (iResult > 0)
 		{
@@ -364,7 +354,7 @@ bool updateMember(SOCKET ConnectSocket, MemberRecord member)
 	upDateRecord.member = member;
 	upDateRecord.callType = StatmentType::update;
 
-
+	//Send server call with member to update and info to server
 	iResult = send(ConnectSocket, charFindRecord, sizeof(ServerCall), 0);
 	if (iResult == SOCKET_ERROR) {
 		printf("send failed with error: %d\n", WSAGetLastError());
@@ -378,6 +368,7 @@ bool updateMember(SOCKET ConnectSocket, MemberRecord member)
 		return 1;
 	}
 	do {
+		//recive error from server
 		iResult = recv(ConnectSocket, charFromServer, sizeof(ClientCall), 0);
 		if (iResult > 0)
 		{

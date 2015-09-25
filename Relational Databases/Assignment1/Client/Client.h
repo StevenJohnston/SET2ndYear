@@ -34,13 +34,16 @@
 #define NUM_DAYS 28
 #define MIN_YEAR 1900
 
+//Types of server DB calls
 enum StatmentType
 {
-	zero,
+	statmenZero,
 	insert,
 	update,
 	find
 }typedef StatmentType;
+
+//Member info struct
 struct MemberRecord
 {
 	int memberId;
@@ -48,13 +51,13 @@ struct MemberRecord
 	char lastName[NAME_LENGTH];
 	char dOB[DOB_ALLOCATE_SIZE];
 }typedef MemberRecord;
-
+//Covers all calls to server
 struct ServerCall
 {
 	int callType;
 	MemberRecord member;
 } typedef ServerCall;
-
+//Cover all calls to client
 struct ClientCall
 {
 	int error;
