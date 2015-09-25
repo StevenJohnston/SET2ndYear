@@ -1,55 +1,11 @@
-#define WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string>
-#include <iostream>
-#include <time.h>
-#include <regex>
-
-
-// Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
-#pragma comment (lib, "Ws2_32.lib")
-#pragma comment (lib, "Mswsock.lib")
-#pragma comment (lib, "AdvApi32.lib")
-
-
-#define DEFAULT_BUFLEN 512
-#define DEFAULT_PORT "27015"
-#define MAX_RECORD_COUNT 40000
-
-using namespace std;
-
-struct MemberRecord
-{
-	int memberId;
-	char firstName[32];
-	char lastName[32];
-	char dOB[11];
-}typedef MemberRecord;
-
-struct ServerCall
-{
-	int callType;
-	MemberRecord member;
-} typedef ServerCall;
-
-struct ClientCall
-{
-	int error;
-	char message[64];
-	MemberRecord member;
-} typedef ClientCall;
-
-bool insertMany(SOCKET ConnectSocket, int quantity);
-int getNum(int min, int max);
-void randomServerCall(ServerCall *message); 
-bool findMember(SOCKET ConnectSocket, int memberId);
-bool updateMember(SOCKET ConnectSocket, MemberRecord member);
-
+/*
+File: Client.h
+Name: Matthew Warren, Steven johnston
+Assignment: Client Server I/O Database Assignment #1
+Date: 9/25/2015
+Description: includes, defines, enums, structs, and prototypes required for Client
+*/
+#include "Client.h"
 int __cdecl main(int argc, char **argv)
 {
 	srand(time(NULL));
@@ -125,63 +81,69 @@ int __cdecl main(int argc, char **argv)
 
 
 
-	printf("Connected to server:\n Select statment\n  1.Insert\n  2.Update\n  3.Find\n  4.Exit");
-
-	int menuSelection = getNum(1,4);
-	int insertQuantity;
-	MemberRecord memberUpdate;
-
-	regex name("[a-zA-Z]+");
-	regex date("(\\d{2})\\/(\\d{2})(?:\\/?(\\d{4}))?");
-	switch (menuSelection)
+	bool disconnectServer = false;
+	printf("Connected to server");
+	for (;!disconnectServer;)
 	{
-	case 1:
-		cout << "How many Random records would you like to input:" << endl;
-		insertQuantity = getNum(1, MAX_RECORD_COUNT);
-		insertMany(ConnectSocket, insertQuantity);
-		cout << "** Begining to insert " << insertQuantity << " records, ***NOTE*** If the server DB reaches 40,000 records during this process, this process will be stopped with notic **" << endl;
-		break;
-	case 2:
-		cout << "Member id to update:" << endl;
-		memberUpdate.memberId = getNum(1, MAX_RECORD_COUNT);
-		cin.ignore();
-		for (;;){
-			cout << "New First Name:" << endl;
-			cin.getline(memberUpdate.firstName, sizeof(memberUpdate.firstName));
-			if (regex_match(memberUpdate.firstName, name))
-			{
-				break;
+		printf("Select statment\n  1.Insert\n  2.Update\n  3.Find\n  4.Exit\n");
+		int menuSelection = getNum(1, 4);
+		int insertQuantity;
+		MemberRecord memberUpdate;
+
+		std::regex name("[a-zA-Z]+");
+		std::regex date("(\\d{2})\\/(\\d{2})(?:\\/?(\\d{4}))?");
+		switch (menuSelection)
+		{
+		case 1:
+			std::cout << "How many Random records would you like to input:" << std::endl;
+			insertQuantity = getNum(1, MAX_RECORD_COUNT);
+			insertMany(ConnectSocket, insertQuantity);
+			std::cout << "** Begining to insert " << insertQuantity << " records, ***NOTE*** If the server DB reaches 40,000 records during this process, this process will be stopped with notic **" << std::endl;
+			break;
+		case 2:
+			std::cout << "Member id to update:" << std::endl;
+			memberUpdate.memberId = getNum(1, MAX_RECORD_COUNT);
+			std::cin.ignore();
+			for (;;) {
+				std::cout << "New First Name:" << std::endl;
+				std::cin.getline(memberUpdate.firstName, sizeof(memberUpdate.firstName));
+				if (regex_match(memberUpdate.firstName, name))
+				{
+					break;
+				}
 			}
-		}
-		for (;;) {
-			cout << "New Last Name:" << endl;
-			cin.getline(memberUpdate.lastName, sizeof(memberUpdate.lastName));
-			if (regex_match(memberUpdate.lastName, name))
-			{
-				break;
+			for (;;) {
+				std::cout << "New Last Name:" << std::endl;
+				std::cin.getline(memberUpdate.lastName, sizeof(memberUpdate.lastName));
+				if (regex_match(memberUpdate.lastName, name))
+				{
+					break;
+				}
 			}
-		}
-		for (;;) {
-			cout << "New Date of Birth:" << endl;
-			cin.getline(memberUpdate.dOB, sizeof(memberUpdate.dOB));
-			if (regex_match(memberUpdate.dOB, date))
-			{
-				break;
+			for (;;) {
+				std::cout << "New Date of Birth:" << std::endl;
+				std::cin.getline(memberUpdate.dOB, sizeof(memberUpdate.dOB));
+				if (regex_match(memberUpdate.dOB, date))
+				{
+					break;
+				}
+				std::cin.clear();
+				std::cin.ignore(100, '\n');
 			}
-			cin.clear();
-			cin.ignore(100, '\n');
+			updateMember(ConnectSocket, memberUpdate);
+			break;
+		case 3:
+			std::cout << "Member id to find:" << std::endl;
+			findMember(ConnectSocket, getNum(1, MAX_RECORD_COUNT));
+			break;
+		case 4:
+			disconnectServer = true;
+			break;
+		default:
+			break;
 		}
-		updateMember(ConnectSocket,memberUpdate);
-		break;
-	case 3:
-		cout << "Member id to find:" << endl;
-		findMember(ConnectSocket,getNum(1, MAX_RECORD_COUNT));
-		break;
-	case 4:
-		break;
-	default:
-		break;
 	}
+	printf("Disconected from server.\n");
 	// cleanup
 	closesocket(ConnectSocket);
 	WSACleanup();
@@ -230,7 +192,7 @@ bool insertMany(SOCKET ConnectSocket, int quantity)
 			{
 				if (fromServer.error != 0)
 				{
-					cout << fromServer.message << endl;
+					std::cout << "Entered " << i << " record(s) before:" << std::endl  << fromServer.message << std::endl;
 					serverError = true;
 				}
 				break;
@@ -242,22 +204,22 @@ bool insertMany(SOCKET ConnectSocket, int quantity)
 
 		} while (iResult > 0);
 	}
-	cout << "insert Done" << endl;
+	std::cout << "insert Done" << std::endl;
 	return true;
 }
 
 int getNum(int min, int max)
 {
-	string input;
+	std::string input;
 	bool enterError;
 	int menuSelection;
 	do
 	{
-		cin >> input;
+		std::cin >> input;
 		enterError = false;
 		try
 		{
-			menuSelection = stoi(input, nullptr, 10);
+			menuSelection = std::stoi(input, nullptr, 10);
 			if (menuSelection > max || menuSelection < min)
 			{
 				enterError = true;
@@ -269,7 +231,7 @@ int getNum(int min, int max)
 		}
 		if (enterError)
 		{
-			cout << "Enter a number listed please" << endl;
+			std::cout << "Enter a number listed please" << std::endl;
 		}
 	} while (enterError);
 	return menuSelection;
@@ -278,22 +240,22 @@ int getNum(int min, int max)
 void randomServerCall(ServerCall *message)
 {
 	char characters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	int firstNameLen = rand() % 31 + 1;
-	int lastNameLen = rand() % 31 + 1;
+	int firstNameLen = rand() % (sizeof(firstNameLen)-1) + 1;
+	int lastNameLen = rand() % (sizeof(lastNameLen)-1) + 1;
 	for (int i = 0; i < firstNameLen || i < lastNameLen; i++)
 	{
 		if (i < firstNameLen)
 		{
-			message->member.firstName[i] = characters[rand() % 52];
+			message->member.firstName[i] = characters[rand() % sizeof(characters)];
 		}
 		if (i < lastNameLen)
 		{
-			message->member.lastName[i] = characters[rand() % 52];
+			message->member.lastName[i] = characters[rand() % sizeof(characters)];
 		}
 	}
-	int year = rand() % 115 + 1900;
-	int month = rand() % 12 + 1;
-	int day = rand() % 28 + 1;
+	int year = rand() % MAX_AGE + MIN_YEAR;
+	int month = rand() % NUM_MONTHS + 1;
+	int day = rand() % NUM_DAYS + 1;
 	sprintf_s(message->member.dOB,"%02d/%02d/%04d",month,day,year);
 }
 bool findMember(SOCKET ConnectSocket,int memberId)
@@ -307,7 +269,7 @@ bool findMember(SOCKET ConnectSocket,int memberId)
 
 	memset(&findRecord, 0, sizeof(ServerCall));
 	findRecord.member.memberId = memberId;
-	findRecord.callType = 3;
+	findRecord.callType = StatmentType::find;
 
 	// Send an initial buffer
 
@@ -338,14 +300,14 @@ bool findMember(SOCKET ConnectSocket,int memberId)
 			//printf("message From server %s\n", fromServer.message);
 			if (fromServer.error != 0)
 			{
-				cout << fromServer.message << endl;
+				std::cout << fromServer.message << std::endl;
 			}
 			else
 			{
-				cout << "Found member \n Member id: " << fromServer.member.memberId
+				std::cout << "Found member \n Member id: " << fromServer.member.memberId
 					<< "\n First name: " << fromServer.member.firstName
 					<< "\n Last name: " << fromServer.member.lastName
-					<< "\n Date Of Birth name: " << fromServer.member.dOB << endl;
+					<< "\n Date Of Birth name: " << fromServer.member.dOB << std::endl;
 			}
 			break;
 		}
@@ -355,7 +317,7 @@ bool findMember(SOCKET ConnectSocket,int memberId)
 			printf("recv failed with error: %d\n", WSAGetLastError());
 
 	} while (iResult > 0);
-	cout << "Find Done" << endl;
+	std::cout << "Find Done" << std::endl;
 	return true;
 }
 
@@ -370,7 +332,7 @@ bool updateMember(SOCKET ConnectSocket, MemberRecord member)
 
 	memset(&upDateRecord, 0, sizeof(ServerCall));
 	upDateRecord.member = member;
-	upDateRecord.callType = 2;
+	upDateRecord.callType = StatmentType::update;
 
 	// Send an initial buffer
 
@@ -401,11 +363,11 @@ bool updateMember(SOCKET ConnectSocket, MemberRecord member)
 			//printf("message From server %s\n", fromServer.message);
 			if (fromServer.error != 0)
 			{
-				cout << fromServer.message << endl;
+				std::cout << fromServer.message << std::endl;
 			}
 			else
 			{
-				cout << "Member update successful" << endl;
+				std::cout << "Member update successful" << std::endl;
 			}
 			break;
 		}
@@ -415,6 +377,6 @@ bool updateMember(SOCKET ConnectSocket, MemberRecord member)
 			printf("recv failed with error: %d\n", WSAGetLastError());
 
 	} while (iResult > 0);
-	cout << "Find Done" << endl;
+	std::cout << "Find Done" << std::endl;
 	return true;
 }
