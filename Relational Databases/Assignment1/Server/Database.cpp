@@ -33,7 +33,7 @@ ClientCall Database::doStatment(ServerCall statment)
 }
 Database::Database()
 {
-	memberTable.reserve(40000);
+	memberTable.reserve(MAX_RECORD_COUNT);
 	try
 	{
 		HANDLE fileIO;
@@ -54,7 +54,7 @@ Database::~Database()
 ClientCall Database::insert(ServerCall statement)
 {
 	ClientCall returnClientCall = { 0,"",{ -1,"","","" } };
-	if (firstEmptyIndex < 40000)
+	if (firstEmptyIndex < MAX_RECORD_COUNT)
 	{
 		statement.member.memberId = newMemberId();
 		memberTable.push_back(statement.member);
@@ -74,7 +74,7 @@ ClientCall Database::update(ServerCall statement)
 	{
 		statement.member.memberId = memberTable[getMemberIndex(statement.member.memberId)].memberId;
 		memberTable[getMemberIndex(statement.member.memberId)] = statement.member;
-		//returnClientCall.member.memberId = 0;
+		updateQue.push_back(statement.member.memberId);
 	}
 	else
 	{

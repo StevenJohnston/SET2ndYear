@@ -9,6 +9,7 @@
 //#include <stdio.h>
 #include "Database.h"
 
+
 // Need to link with Ws2_32.lib
 #pragma comment (lib, "Ws2_32.lib")
 // #pragma comment (lib, "Mswsock.lib")
@@ -16,7 +17,6 @@
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "27015"
 #define MAX_CLIENTS 64
-
 
 int __cdecl main(void)
 {

@@ -19,6 +19,7 @@
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "27015"
+#define MAX_RECORD_COUNT 40000
 
 using namespace std;
 
@@ -136,13 +137,13 @@ int __cdecl main(int argc, char **argv)
 	{
 	case 1:
 		cout << "How many Random records would you like to input:" << endl;
-		insertQuantity = getNum(1, 40000);
+		insertQuantity = getNum(1, MAX_RECORD_COUNT);
 		insertMany(ConnectSocket, insertQuantity);
 		cout << "** Begining to insert " << insertQuantity << " records, ***NOTE*** If the server DB reaches 40,000 records during this process, this process will be stopped with notic **" << endl;
 		break;
 	case 2:
 		cout << "Member id to update:" << endl;
-		memberUpdate.memberId = getNum(1, 40000);
+		memberUpdate.memberId = getNum(1, MAX_RECORD_COUNT);
 		cin.ignore();
 		for (;;){
 			cout << "New First Name:" << endl;
@@ -174,7 +175,7 @@ int __cdecl main(int argc, char **argv)
 		break;
 	case 3:
 		cout << "Member id to find:" << endl;
-		findMember(ConnectSocket,getNum(1, 40000));
+		findMember(ConnectSocket,getNum(1, MAX_RECORD_COUNT));
 		break;
 	case 4:
 		break;
@@ -195,8 +196,8 @@ bool insertMany(SOCKET ConnectSocket, int quantity)
 
 	ClientCall fromServer;
 	char* charFromServer = (char*)&fromServer;
-
-	for (int i = 0; i < quantity; i++)
+	bool serverError = false;
+	for (int i = 0; i < quantity && !serverError; i++)
 	{
 		memset(&newRecord, 0, sizeof(ServerCall));
 		randomServerCall(&newRecord);
@@ -225,13 +226,12 @@ bool insertMany(SOCKET ConnectSocket, int quantity)
 		do {
 
 			iResult = recv(ConnectSocket, charFromServer, sizeof(ClientCall), 0);
-			//fromServer = *reinterpret_cast<ClientCall*>(charFromServer);
 			if (iResult > 0)
 			{
-				//printf("message From server %s\n", fromServer.message);
 				if (fromServer.error != 0)
 				{
 					cout << fromServer.message << endl;
+					serverError = true;
 				}
 				break;
 			}
