@@ -6,10 +6,12 @@ Date: 9/25/2015
 Description: includes, defines, enums, structs, and prototypes required for Client
 */
 #include "Server.h"
-int __cdecl main(void)
+int __cdecl main(int argc, char* argv[])
 {
-	Database memberDB;
-
+	if (argc != 2) {
+		printf("usage: %s file-name\n", argv[0]);
+		return 1;
+	}
 	SOCKET clientSocket[MAX_CLIENTS];
 	for (int x = 0; x < MAX_CLIENTS; x++)
 	{
@@ -18,6 +20,8 @@ int __cdecl main(void)
 
 	WSADATA wsaData;
 	int iResult;
+	bool *serverShutDown = (bool*)malloc(sizeof(bool));
+	*serverShutDown = false;
 
 	SOCKET ListenSocket = INVALID_SOCKET;
 	SOCKET ClientSocket = INVALID_SOCKET;
@@ -59,10 +63,6 @@ int __cdecl main(void)
 		return 1;
 	}
 
-	/* mine*/
-	
-	/**/
-
 	// Setup the TCP listening socket
 	iResult = bind(ListenSocket, result->ai_addr, (int)result->ai_addrlen);
 	if (iResult == SOCKET_ERROR) {
@@ -72,13 +72,8 @@ int __cdecl main(void)
 		WSACleanup();
 		return 1;
 	}
-
-	//freeaddrinfo(result);
-
 	iResult = listen(ListenSocket, SOMAXCONN);
 	if (iResult == SOCKET_ERROR) {
-		//printf("listen failed with error: %d\n", WSAGetLastError());
-		//closesocket(ListenSocket);
 		WSACleanup();
 		return 1;
 	}
@@ -86,8 +81,13 @@ int __cdecl main(void)
 	u_long iMode = 1;
 	ioctlsocket(ListenSocket, FIONBIO, &iMode);
 
+
+	Database memberDB(argv[1]);
+	HANDLE fileIO;
+	fileIO = CreateThread(NULL, 0, getInput, serverShutDown, 0, NULL);
 	// Accept a client socket
-	for (;;)
+	printf("Accepting clients...\n");
+	for (;!*serverShutDown;)
 	{
 		//add new client
 		int freeSocket = 0;
@@ -95,11 +95,9 @@ int __cdecl main(void)
 		if (freeSocket < MAX_CLIENTS)
 		{
 			clientSocket[freeSocket] = accept(ListenSocket, NULL, NULL);
-			if (clientSocket[freeSocket] == INVALID_SOCKET) {
-				//printf("accept failed with error: %d\n", WSAGetLastError());
-				//closesocket(ListenSocket);
-				//WSACleanup();
-				//return 1;
+
+			if (clientSocket[freeSocket] != INVALID_SOCKET) {
+				std::cout << "Client #" << freeSocket << " connected" << std::endl;
 			}
 		}
 		//read from clients
@@ -117,19 +115,16 @@ int __cdecl main(void)
 					recvbuf[0] = '\0';
 					iResult = recv(clientSocket[cClientSocket], charInMessage, sizeof(ServerCall), 0);
 					if (iResult > 0) {
-						
-						//printf("Bytes received: %d: %s\n", iResult,inMessage.member.firstName);
 						outMessage = memberDB.doStatment(inMessage);
 						if (outMessage.member.memberId == -1)
 						{
 							outMessage.error = 1;
-							//outMessage.message = "..";
 						}
 
 						// Echo the buffer back to the sender
 						iSendResult = send(clientSocket[cClientSocket], charOutMessage, sizeof(ClientCall), 0);
 						if (iSendResult == SOCKET_ERROR) {
-							printf("send failed with error: %d\n", WSAGetLastError());
+							std::cout << "Sent to server Failed" << std::endl;
 							closesocket(clientSocket[cClientSocket]);
 							WSACleanup();
 							return 1;
@@ -139,31 +134,15 @@ int __cdecl main(void)
 					}
 					else if (iResult == 0)
 					{
-						printf("Connection closing...\n");
+						printf("client #%d closing...\n",cClientSocket);
 						closesocket(clientSocket[cClientSocket]);
 						clientSocket[cClientSocket] = INVALID_SOCKET;
 					}
 					else {
-						//will be spammed thanks to non blovking
-						//printf("recv failed with error: %d\n", WSAGetLastError());
-						//closesocket(ClientSocket);
-						//WSACleanup();
-						//return 1;
 					}
 
 				} while (iResult > 0);
 			}
-		}
-		// No longer need server socket
-		//closesocket(ListenSocket);
-
-		// shutdown the connection since we're done
-		//iResult = shutdown(ClientSocket, SD_SEND);
-		if (iResult == SOCKET_ERROR) {
-			//printf("shutdown failed with error: %d\n", WSAGetLastError());
-			//closesocket(ClientSocket);
-			//WSACleanup();
-			//return 1;
 		}
 	}
 	// cleanup
@@ -171,4 +150,22 @@ int __cdecl main(void)
 	WSACleanup();
 
 	return 0;
+}
+
+
+DWORD WINAPI getInput(void *exit)
+{
+	for (;;)
+	{
+		std::cout << "Enter 1 to close Server\n";
+		int input;
+		std::cin >> input;
+		if (input == 1)
+		{
+			bool* bExit = (bool*)exit;
+			*bExit = true;
+			break;
+		}
+	}
+	return 1;
 }

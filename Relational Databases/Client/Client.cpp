@@ -72,10 +72,10 @@ int __cdecl main(int argc, char **argv)
 		return 1;
 	}
 	//true to disconnect from server
-	bool disconnectServer = false;
+	bool serverRunning = true;
 	printf("Connected to server");
 	//loop till server disconnect flag = true
-	for (;!disconnectServer;)
+	for (;serverRunning;)
 	{
 		printf("Select statment\n  1.Insert\n  2.Update\n  3.Find\n  4.Exit\n");
 		//get menu select
@@ -89,16 +89,16 @@ int __cdecl main(int argc, char **argv)
 		switch (menuSelection)
 		{
 		case StatmentType::insert:
-			std::cout << "How many Random records would you like to input:" << std::endl;
+			std::cout << "How many Random records would you like to input (1-40,000):" << std::endl;
 			insertQuantity = getNum(1, MAX_RECORD_COUNT);
-			insertMany(ConnectSocket, insertQuantity);
+			serverRunning = insertMany(ConnectSocket, insertQuantity);
 			std::cout << "** Begining to insert " << insertQuantity << " records, ***NOTE*** If the server DB reaches 40,000 records during this process, this process will be stopped with notic **" << std::endl;
 			break;
 		case StatmentType::update:
 			std::cout << "Member id to update:" << std::endl;
-			memberUpdate.memberId = getNum(1, MAX_RECORD_COUNT);
+			memberUpdate.memberId = getNum(1, MAX_RECORD_COUNT);//get memberId
 			std::cin.ignore();
-			for (;;) {
+			for (;;) {//get firstName
 				std::cout << "New First Name:" << std::endl;
 				std::cin.getline(memberUpdate.firstName, sizeof(memberUpdate.firstName));
 				if (regex_match(memberUpdate.firstName, name))
@@ -106,7 +106,7 @@ int __cdecl main(int argc, char **argv)
 					break;
 				}
 			}
-			for (;;) {
+			for (;;) {//get LastName
 				std::cout << "New Last Name:" << std::endl;
 				std::cin.getline(memberUpdate.lastName, sizeof(memberUpdate.lastName));
 				if (regex_match(memberUpdate.lastName, name))
@@ -114,8 +114,8 @@ int __cdecl main(int argc, char **argv)
 					break;
 				}
 			}
-			for (;;) {
-				std::cout << "New Date of Birth:" << std::endl;
+			for (;;) {// get DOB
+				std::cout << "New Date of Birth: (mm/dd/yyyy)" << std::endl;
 				std::cin.getline(memberUpdate.dOB, sizeof(memberUpdate.dOB));
 				if (regex_match(memberUpdate.dOB, date))
 				{
@@ -124,20 +124,21 @@ int __cdecl main(int argc, char **argv)
 				std::cin.clear();
 				std::cin.ignore(100, '\n');
 			}
-			updateMember(ConnectSocket, memberUpdate);
+			serverRunning = updateMember(ConnectSocket, memberUpdate);
 			break;
 		case StatmentType::find:
 			std::cout << "Member id to find:" << std::endl;
-			findMember(ConnectSocket, getNum(1, MAX_RECORD_COUNT));
+			serverRunning = findMember(ConnectSocket, getNum(1, MAX_RECORD_COUNT));
 			break;
 		case 4: //exit
-			disconnectServer = true;
+			serverRunning = false;
 			break;
 		default:
 			break;
 		}
+
 	}
-	printf("Disconected from server.\n");
+	printf("\nDisconected from server.\n");
 	// cleanup
 	closesocket(ConnectSocket);
 	WSACleanup();
@@ -161,9 +162,9 @@ bool insertMany(SOCKET ConnectSocket, int quantity)
 
 	ClientCall fromServer;
 	char* charFromServer = (char*)&fromServer;
-	bool serverError = false;
+	bool serverRunning = true;
 	//send quantity amount of calls. end early if server sends error
-	for (int i = 0; i < quantity && !serverError; i++)
+	for (int i = 0; i < quantity && serverRunning; i++)
 	{
 		memset(&newRecord, 0, sizeof(ServerCall));
 		randomServerCall(&newRecord);
@@ -172,13 +173,7 @@ bool insertMany(SOCKET ConnectSocket, int quantity)
 		// Send serverCall to server
 		iResult = send(ConnectSocket, charNewRecord, sizeof(ServerCall), 0);
 		if (iResult == SOCKET_ERROR) {
-			printf("send failed with error: %d\n", WSAGetLastError());
-		}
-		if (iResult == SOCKET_ERROR) {
-			printf("shutdown failed with error: %d\n", WSAGetLastError());
-			closesocket(ConnectSocket);
-			WSACleanup();
-			return 1;
+			serverRunning = false;
 		}
 		// Receive until the peer closes the connection
 		do {
@@ -189,19 +184,24 @@ bool insertMany(SOCKET ConnectSocket, int quantity)
 				if (fromServer.error != 0)
 				{
 					std::cout << "Entered " << i << " record(s) before:" << std::endl  << fromServer.message << std::endl;
-					serverError = true;
+					serverRunning = false;
 				}
 				break;
 			}
 			else if (iResult == 0)
+			{
 				printf("Connection closed\n");
+				serverRunning = false;
+			}
 			else
-				printf("recv failed with error: %d\n", WSAGetLastError());
+			{
+				serverRunning = false;
+			}
 
 		} while (iResult > 0);
 	}
 	std::cout << "insert Done" << std::endl;
-	return true;
+	return serverRunning;
 }
 /*
 Function Name: getNum
@@ -294,17 +294,13 @@ bool findMember(SOCKET ConnectSocket,int memberId)
 	findRecord.member.memberId = memberId;
 	findRecord.callType = StatmentType::find;
 
+	bool serverRunning = true;
+
 	//Send serverCall with id of member to find
 	iResult = send(ConnectSocket, charFindRecord, sizeof(ServerCall), 0);
-	if (iResult == SOCKET_ERROR) {
-		printf("send failed with error: %d\n", WSAGetLastError());
-	}
 
 	if (iResult == SOCKET_ERROR) {
-		printf("shutdown failed with error: %d\n", WSAGetLastError());
-		closesocket(ConnectSocket);
-		WSACleanup();
-		return 1;
+		serverRunning = false;
 	}
 	do {
 		//recive error / member info from server
@@ -325,13 +321,18 @@ bool findMember(SOCKET ConnectSocket,int memberId)
 			break;
 		}
 		else if (iResult == 0)
+		{
 			printf("Connection closed\n");
+			serverRunning = false;
+		}
 		else
-			printf("recv failed with error: %d\n", WSAGetLastError());
+		{
+			serverRunning = false;
+		}
 
 	} while (iResult > 0);
 	std::cout << "Find Done" << std::endl;
-	return true;
+	return serverRunning;
 }
 /*
 Function Name: updateMember
@@ -343,6 +344,7 @@ return:
 */
 bool updateMember(SOCKET ConnectSocket, MemberRecord member)
 {
+	bool serverRunning = true;
 	int iResult = 0;
 	ServerCall upDateRecord;
 	char* charFindRecord = (char*)&upDateRecord;
@@ -357,15 +359,13 @@ bool updateMember(SOCKET ConnectSocket, MemberRecord member)
 	//Send server call with member to update and info to server
 	iResult = send(ConnectSocket, charFindRecord, sizeof(ServerCall), 0);
 	if (iResult == SOCKET_ERROR) {
-		printf("send failed with error: %d\n", WSAGetLastError());
+		serverRunning = false;
 	}
 
 	// shutdown the connection since no more data will be sent
 	if (iResult == SOCKET_ERROR) {
 		printf("shutdown failed with error: %d\n", WSAGetLastError());
-		closesocket(ConnectSocket);
-		WSACleanup();
-		return 1;
+		serverRunning = false;
 	}
 	do {
 		//recive error from server
@@ -383,11 +383,16 @@ bool updateMember(SOCKET ConnectSocket, MemberRecord member)
 			break;
 		}
 		else if (iResult == 0)
+		{
 			printf("Connection closed\n");
+			serverRunning = false;
+		}
 		else
-			printf("recv failed with error: %d\n", WSAGetLastError());
+		{
+			serverRunning = false;
+		}
 
 	} while (iResult > 0);
 	std::cout << "Find Done" << std::endl;
-	return true;
+	return serverRunning;
 }

@@ -62,6 +62,7 @@ class Database
 {
 public:
 	Database();
+	Database(char*);
 	~Database();
 	ClientCall doStatment(ServerCall);
 
@@ -75,6 +76,7 @@ private:
 	int lastUpdatedIndex;
 	int newMemberId();
 	int getMemberIndex(int);
+	char* dbfile;
 	
 	static DWORD WINAPI fileAccess(void* database)
 	{

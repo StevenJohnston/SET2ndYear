@@ -22,3 +22,6 @@ Description: includes, defines, and prototypes required for Server
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "27015"
 #define MAX_CLIENTS 64
+
+
+DWORD WINAPI getInput(void*);

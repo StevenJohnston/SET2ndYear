@@ -53,18 +53,23 @@ ClientCall Database::doStatment(ServerCall statment)
 	}
 	return returnClientCall;
 }
-/*
-Function Name: Database
-description: Initialize DB. Reads file into memory then writes new/updated data to file.
-parameter:
-return:
-*/
 Database::Database()
 {
-	memberTable.reserve(MAX_RECORD_COUNT);
 	
+}
+/*
+Function Name : Database
+description : Initialize DB by file name. Reads file into memory then writes new / updated data to file.
+	parameter :
+	return :
+*/
+Database::Database(char *file)
+{
+	dbfile = file;
+	memberTable.reserve(MAX_RECORD_COUNT);
+
 	HANDLE fileIO;
-	fileIO = CreateThread(NULL,0,fileAccess,this,0, NULL);
+	fileIO = CreateThread(NULL, 0, fileAccess, this, 0, NULL);
 }
 
 Database::~Database()
@@ -195,65 +200,70 @@ DWORD:
 */
 DWORD Database::fileIOThread(Database* database)
 {
-
-	//read from file
-	std::ifstream myfileRead;
-
-	myfileRead.open("member.db", std::fstream::binary | std::ofstream::in);
-	//const char* wPointer = reinterpret_cast<const char*>(&(database->memberTable[lastUpdatedIndex]));
-	std::streampos fileSize;
-
-	myfileRead.seekg(0, std::ios::end);
-	fileSize = myfileRead.tellg();
-	myfileRead.seekg(0, std::ios::beg);
-
-	//read each record form DB
-	for (int i = 0; i < fileSize / sizeof(MemberRecord); i++)
+	try
 	{
-		MemberRecord memberFromFile;
-		char* charFromFile = (char*)&memberFromFile;
-		myfileRead.read(charFromFile, sizeof(memberFromFile));
-		database->memberTable.push_back(memberFromFile);
-	}
-	firstEmptyIndex = database->memberTable.size();
-	lastUpdatedIndex = database->memberTable.size();
-	std::cout << "Database loaded" << std::endl;
-	//write and update file
-	for (;;)
-	{
-		if (database->memberTable.size() != 0)
+		//read from file
+		std::ifstream myfileRead;
+
+		myfileRead.open(dbfile, std::fstream::binary | std::ofstream::in);
+		//const char* wPointer = reinterpret_cast<const char*>(&(database->memberTable[lastUpdatedIndex]));
+		std::streampos fileSize;
+
+		myfileRead.seekg(0, std::ios::end);
+		fileSize = myfileRead.tellg();
+		myfileRead.seekg(0, std::ios::beg);
+
+		//read each record form DB
+		for (int i = 0; i < fileSize / sizeof(MemberRecord); i++)
 		{
-			if (lastUpdatedIndex < database->memberTable.size())
+			MemberRecord memberFromFile;
+			char* charFromFile = (char*)&memberFromFile;
+			myfileRead.read(charFromFile, sizeof(memberFromFile));
+			database->memberTable.push_back(memberFromFile);
+		}
+		firstEmptyIndex = database->memberTable.size();
+		lastUpdatedIndex = database->memberTable.size();
+		myfileRead.close();
+		std::cout << "Database loaded\n";
+		//write and update file
+		for (;;)
+		{
+			if (database->memberTable.size() != 0)
 			{
-				std::ofstream myfile;
-				myfile.open("memberDB", std::ios::binary | std::ofstream::app);
-				myfile.seekp(0, std::ios::end);
-				//point at first record that has not been added to file.
-				const char* pointer = reinterpret_cast<const char*>(&(database->memberTable[lastUpdatedIndex]));
-				//Get size of table now. prevents get two different sizes. 
-				int sizeSnapshot = database->memberTable.size();
-				//Number of bytes to write 
-				size_t bytes = (sizeSnapshot - lastUpdatedIndex) * sizeof(database->memberTable[0]);
-				//lastupdatedIndex is now after most recent inserted record in table
-				lastUpdatedIndex = sizeSnapshot;
-				//Write mutiple records from table.
-				myfile.write(pointer, bytes);
-				myfile.close();
+				if (lastUpdatedIndex < database->memberTable.size())
+				{
+					std::ofstream myfile;
+					myfile.open(dbfile, std::ios::binary | std::ofstream::app);
+					myfile.seekp(0, std::ios::end);
+					//point at first record that has not been added to file.
+					const char* pointer = reinterpret_cast<const char*>(&(database->memberTable[lastUpdatedIndex]));
+					//Get size of table now. prevents get two different sizes. 
+					int sizeSnapshot = database->memberTable.size();
+					//Number of bytes to write 
+					size_t bytes = (sizeSnapshot - lastUpdatedIndex) * sizeof(database->memberTable[0]);
+					//lastupdatedIndex is now after most recent inserted record in table
+					lastUpdatedIndex = sizeSnapshot;
+					//Write mutiple records from table.
+					myfile.write(pointer, bytes);
+					myfile.close();
+				}
+			}
+			if (updateQue.size() != 0)
+			{
+				std::fstream fileAppMid;
+				fileAppMid.open(dbfile, std::fstream::in | std::fstream::out | std::fstream::binary);
+				int memberId = updateQue.front();
+				updateQue.pop_front();
+				fileAppMid.seekp(getMemberIndex(memberId) * sizeof(MemberRecord));
+				fileAppMid.write((char*)&(database->memberTable[getMemberIndex(memberId)]), sizeof(MemberRecord));
+				fileAppMid.close();
 			}
 		}
-
-		if (updateQue.size() != 0)
-		{
-			std::fstream fileAppMid;
-			fileAppMid.open("member.db", std::fstream::in | std::fstream::out | std::fstream::binary);
-			int memberId = updateQue.front();
-			updateQue.pop_front();
-			fileAppMid.seekp(getMemberIndex(memberId) * sizeof(MemberRecord));
-			fileAppMid.write((char*)&(database->memberTable[getMemberIndex(memberId)]), sizeof(MemberRecord));
-		}
 	}
-
-	//myfile << "Writing this to a file.\n";
-	//myfile.close();
+	catch (std::exception e)
+	{
+		std::cout << "Server has Shutdown preventing file thread from continuing\n";
+	}
 	return 0;
 }
+
