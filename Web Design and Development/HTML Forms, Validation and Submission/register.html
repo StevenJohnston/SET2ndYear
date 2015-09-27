@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SET Registration</title>
+	<script src="js/sjquery.js"></script>
+	<script src="js/main.js"></script>
+</head>
+http://pc-00224d503c23/testRequest.asp
+<body>
+	<form name="registerForm"  action="" onsubmit="return validateRegisterForm()" method="GET">
+		<label>Name <input type = "text" id="txtName"></label><br>
+		<label>Street <input type = "text" id="txtStreet"></label><br>
+		<label>City <input type="text" id="txtCity"></label><br>
+		<label>Province <select id="sProvince">
+			<option value="NA">Select Province</option>
+			<option value="AB">Alberta</option>
+			<option value="BC">British Columbia</option>
+			<option value="MB">Manitoba</option>
+			<option value="NB">New Brunswick</option>
+			<option value="NL">Newfoundland and Labrador</option>
+			<option value="NS">Nova Scotia</option>
+			<option value="ON">Ontario</option>
+			<option value="PE">Prince Edward Island</option>
+			<option value="QC">Quebec</option>
+			<option value="SK">Saskatchewan</option>
+			<option value="NT">Northwest Territories</option>
+			<option value="NU">Nunavut</option>
+			<option value="YT">Yukon</option>
+		</select></label><br>
+		<label>Postal Code <input type="text" id="txtPostal"></label><br>
+		<input type="radio" id="rStudent" name="StuFac" value="Student"> Student <br>
+		<input type="radio" id="rFaculty" name="StuFac" value="Faculty"> Faculty <br>
+		<div id="divFacCheck" style="display:none">
+			<input type="checkbox"> Teach in Engineering
+			<input type="checkbox"> Drive Car to Work
+			<input type="checkbox"> Bring Lunch
+		</div>
+		<div id="divStuCheck" style="display:none">
+			<input type="checkbox"> Study in Information Technology
+			<input type="checkbox"> Own a Laptop Computer
+			<input type="checkbox"> Take Bus to School
+			<input type="checkbox"> Own a Portable Music Player
+		</div>
+		<input type="reset" value="Cancel">
+		<input type="Submit" value="Submit">
+
+
+	</form>
+</body>
+</html>
