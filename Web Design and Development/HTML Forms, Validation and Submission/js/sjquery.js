@@ -233,6 +233,19 @@ var $SJ = function(element,stackLimiter) {
         selectedId: function()
         {
         	return element.options[element.selectedIndex].value;
-        }
+        },
+        checked: function(val)
+        {
+        	if(val == undefined)
+        	{
+        		return element.checked;
+        	}
+        	else
+        	{
+        		element.checked = val;
+        	}
+        },
+        
+
     }
 };
