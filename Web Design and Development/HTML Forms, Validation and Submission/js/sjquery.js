@@ -12,47 +12,48 @@
 //	stackLimiter: If set will not create a second version of its self to save the stack from EXPLODING
 //Return:
 //	An array with a list of all the methods
-var $SJ = function(element,stackLimiter) {
+var $SJ = function(elementIn,stackLimiter) {
 	//Second version of its self allows for easier method calls (on same element)
-	var thisElement;
+	var thisElement ;
+	var elements = [];
+	if(stackLimiter == undefined){
+		thisElement = $SJ(elementIn,"defined");
+	}
 
 	//element must be of type string
-	if(typeof element == "string"){
+	if(typeof elementIn == "string"){
 		//How to select element (by id,name,tag,classname)
-		switch(element.charAt(0)){
+		var newElements;
+		if(stackLimiter == undefined){
+			var thisElement = $SJ(elementIn,"defined");
+		}
+		switch(elementIn.charAt(0)){
 			case '#': //by id
-				element = document.getElementById(element.substring(1));
-				if(stackLimiter == undefined){
-					var thisElement = $SJ("#"+element.id,"defined");
-				}
+				elements.push(document.getElementById(elementIn.substring(1)));
 				break;
 			case("."): //by className
-				element = document.getElementByClassName(element.substring(1));
-				if(stackLimiter == undefined){
-					var thisElement = $SJ("."+element.className,"defined");
+				newElements = document.getElementsByClassName(elementIn.substring(1));
+				for(var i = 0; i < newElements.length;i++)
+				{
+					elements.push(newElements[i]);
 				}
 				break;
-			case("["): //by localName
-				element = document.getElementByName(element.substring(1));
-				if(stackLimiter == undefined){
-					var thisElement = $SJ("["+element.localName,"defined");
+			case("*"): //by localName
+				newElements = document.getElementsByName(elementIn.substring(1));
+				for(var i = 0; i < newElements.length;i++)
+				{
+					elements.push(newElements[i]);
 				}
 				break;
 			default: //by TagName
-				if(element == "window"){
-					element = document.getElementsByTagName(element);
+				if(elementIn == "window"){
+					elements.push(document.getElementsByTagName(elementIn));
 				}
-				else{
-					element = document.getElementsByTagName(element)[0];
-				}
-
-				if(stackLimiter == undefined){
-					var thisElement = $SJ(element,"defined");
-				}
-
 				break;
 		}
 	}
+
+	var elementIsArray = (elements.constructor === Array);
 	//Array of methods
     return {
     	//Name: innerHTML
@@ -61,8 +62,11 @@ var $SJ = function(element,stackLimiter) {
 		//	html: What to be set in the innerHTML of element
 		//Return:
 		//	
-        innerHTML: function(html) {
-            element.innerHTML = html;
+        innerHTML: function(val) {
+        	for(var element in elements)
+        	{
+            	elements[element].innerHTML = val;
+        	}
         },
     	//Name: style
 		//Decsription: set specified style attribute to specified value
@@ -70,18 +74,35 @@ var $SJ = function(element,stackLimiter) {
 		//	attr: The style attribute to change
 		//Return:
 		//	value: Value to set attribute to
-        style: function(attr,value) {
+        style: function(attr,val) {
         	//Different types of style attributes
-        	switch(attr){
-        		case "display":
-        			element.style.display = value;
-        			break;
-        		case "background-color":
-        			element.style.backgroundColor = value;
-        			break;
-        		default:
-        			break;
-        	}
+        	for (var element in elements)
+        	{
+	        	switch(attr){
+	        		case "display":
+	        			if(val == undefined)
+	        			{
+	        				return elements[element].style.display;
+	        			}
+	        			else
+	        			{
+	        				elements[element].style.display = val;
+	        			}
+	        			break;
+	        		case "background-color":
+	        			if(val == undefined)
+	        			{
+	        				return elements[element].style.backgroundColor;
+	        			}
+	        			else
+	        			{
+	        				elements[element].style.backgroundColor = val;
+	        			}
+	        			break;
+	        		default:
+	        			break;
+	        	}
+	        }
         	
         },
     	//Name: ready
@@ -89,12 +110,15 @@ var $SJ = function(element,stackLimiter) {
 		//Param:
 		//	func: The function to set element's onload to
 		//Return:
-		//	
+		//	???
         ready: function(func) {
-        	if(element == document.getElementsByTagName("window")){
-        		element = window;
-        		element.onload = func;
-        	}
+        	for(var element in elements)
+        	{
+	        	if(elements[element] == document.getElementsByTagName("window")){
+	        		elements[element] = window;
+	        		elements[element].onload = func;
+	        	}
+	        }
         },
     	//Name: click
 		//Decsription: Set function to be called when element's onclick function is called
@@ -103,16 +127,19 @@ var $SJ = function(element,stackLimiter) {
 		//Return:
 		//	
         click: function(func){
-        	if(func == undefined){
-        		//Credit to KooiInc
-        		//http://stackoverflow.com/questions/2705583/how-to-simulate-a-click-with-javascript
-        		var evObj = document.createEvent('Events');
-				evObj.initEvent("click", true, false);
-				element.dispatchEvent(evObj);
-        	}
-        	else{
-        		element.onclick = func;
-        	}
+        	for (var element in elements)
+        	{
+	        	if(func == undefined){
+	        		//Credit to KooiInc
+	        		//http://stackoverflow.com/questions/2705583/how-to-simulate-a-click-with-javascript
+	        		var evObj = document.createEvent('Events');
+					evObj.initEvent("click", true, false);
+					elements[element].dispatchEvent(evObj);
+	        	}
+	        	else{
+	        		elements[element].onclick = func;
+	        	}
+	        }
         },
     	//Name: value
 		//Decsription: Get or Set the value of element
@@ -121,11 +148,14 @@ var $SJ = function(element,stackLimiter) {
 		//Return:
 		//	
         value: function(val){
-        	if(val != undefined){
-        		element.value = val;
-        	}else{
-        	   	return element.value;
-        	}
+        	for (var element in elements)
+        	{
+	        	if(val != undefined){
+	        		elements[element].value = val;
+	        	}else{
+	        	   	return elements[element].value;
+	        	}
+	        }
         },
     	//Name: changeColor
 		//Decsription: Changes background color of element
@@ -137,66 +167,69 @@ var $SJ = function(element,stackLimiter) {
 		//	
         changeColor: function(time,toColor,rewind)
         {
-        	var speed =100;
-        	var current = 0;
-        	var last = time/speed/2;
-        	var shadeUp = true;
-
-        	var incrementer = 1;
-        	//Check if originalcolor attribute has been set if not create it
-        	var originalColor = thisElement.attr("originalcolor");
-        	if(originalColor == undefined){
-				originalColor = window.getComputedStyle(element,null).getPropertyValue("background-color");
-        		thisElement.attr("originalcolor",originalColor);
-        		thisElement.style("background-color",originalColor);
-        	}
-        	//Starting color
-        	var fromColor = originalColor.substring(originalColor.indexOf("(")+1,originalColor.length-1).split(", ");
-        	if(originalColor[4] != undefined){
-        		for (var i = fromColor.length - 1; i >= 0; i--) {
-        			fromColor[i] = 255;
-        		};
-        	}
-        	//ending color
-        	var toColor = toColor.substring(4,toColor.length-1).split(",");
-
-        	//check if element is already been colorchanged
-        	if(originalColor == element.style.backgroundColor){
-        		var loop = setInterval(animateColor,speed);
-        	}
-
-        	//Name: animateColor
-			//Decsription: Used in a setInterval call to animate color change
-			//Param:
-			//	
-			//Return:
-			//	
-        	function animateColor()
+        	for (var element in elements)
         	{
-				thisElement.attr("colorchange","1");
-				//set color inbetween from and to color
-				var newBack = "rgb(";
-				for(var i = 0 ; i < 3 ; i++){
-					newBack += (parseInt(fromColor[i]) + parseInt((parseInt(toColor[i]) - parseInt(fromColor[i]))/last)*current) + ",";
-				}
-				newBack = newBack.slice(0,-1);
-				newBack += ")";
-				element.style.backgroundColor = newBack;
-				
-				current+= incrementer;
-				if(current >=last && shadeUp == true){
-					incrementer = -1;
-					shadeUp = false;
-					if(rewind == undefined){
-						element.style.backgroundColor = originalColor;
+	        	var speed =100;
+	        	var current = 0;
+	        	var last = time/speed/2;
+	        	var shadeUp = true;
+
+	        	var incrementer = 1;
+	        	//Check if originalcolor attribute has been set if not create it
+	        	var originalColor = thisElement.attr("originalcolor");
+	        	if(originalColor == undefined){
+					originalColor = window.getComputedStyle(elements[element],null).getPropertyValue("background-color");
+	        		thisElement.attr("originalcolor",originalColor);
+	        		thisElement.style("background-color",originalColor);
+	        	}
+	        	//Starting color
+	        	var fromColor = originalColor.substring(originalColor.indexOf("(")+1,originalColor.length-1).split(", ");
+	        	if(originalColor[4] != undefined){
+	        		for (var i = fromColor.length - 1; i >= 0; i--) {
+	        			fromColor[i] = 255;
+	        		};
+	        	}
+	        	//ending color
+	        	var toColor = toColor.substring(4,toColor.length-1).split(",");
+
+	        	//check if element is already been colorchanged
+	        	if(originalColor == elements[element].style.backgroundColor){
+	        		var loop = setInterval(animateColor,speed);
+	        	}
+
+	        	//Name: animateColor
+				//Decsription: Used in a setInterval call to animate color change
+				//Param:
+				//	
+				//Return:
+				//	
+	        	function animateColor()
+	        	{
+					thisElement.attr("colorchange","1");
+					//set color inbetween from and to color
+					var newBack = "rgb(";
+					for(var i = 0 ; i < 3 ; i++){
+						newBack += (parseInt(fromColor[i]) + parseInt((parseInt(toColor[i]) - parseInt(fromColor[i]))/last)*current) + ",";
+					}
+					newBack = newBack.slice(0,-1);
+					newBack += ")";
+					elements[element].style.backgroundColor = newBack;
+					
+					current+= incrementer;
+					if(current >=last && shadeUp == true){
+						incrementer = -1;
+						shadeUp = false;
+						if(rewind == undefined){
+							elements[element].style.backgroundColor = originalColor;
+							clearInterval(loop);
+						}
+					}
+					else if(current <= 0 && shadeUp == false){
+						elements[element].style.backgroundColor = originalColor;
 						clearInterval(loop);
 					}
-				}
-				else if(current <= 0 && shadeUp == false){
-					element.style.backgroundColor = originalColor;
-					clearInterval(loop);
-				}
-        	}
+	        	}
+	        }
         },
     	//Name: attr
 		//Decsription: Get or Set attribute of element
@@ -206,11 +239,14 @@ var $SJ = function(element,stackLimiter) {
 		//Return:
 		//	
         attr: function(name,val){
-        	if(val == undefined){
-        		return element.getAttribute(name);
-        	}else{
-	        	element.setAttribute(name,val);
-        	}
+        	for (var element in elements)
+        	{
+	        	if(val == undefined){
+	        		return elements[element].getAttribute(name);
+	        	}else{
+		        	elements[element].setAttribute(name,val);
+	        	}
+	        }
         },
     	//Name: keydown
 		//Decsription: Set function to be called when element's onkeydown function is called
@@ -219,7 +255,10 @@ var $SJ = function(element,stackLimiter) {
 		//Return:
 		//	
         keydown: function(func){
-        	element.onkeydown = func;
+        	for (var element in elements)
+        	{
+        		elements[element].onkeydown = func;
+        	}
         },
     	//Name: focus
 		//Decsription: Sets focus to element 
@@ -228,22 +267,31 @@ var $SJ = function(element,stackLimiter) {
 		//Return:
 		//	
         focus: function(){
-        	element.focus();
+        	for (var element in elements)
+        	{
+        		elements[element].focus();
+        	}
         },
         selectedId: function()
         {
-        	return element.options[element.selectedIndex].value;
+        	for (var element in elements)
+        	{
+        		return elements[element].options[elements[element].selectedIndex].value;
+        	}
         },
         checked: function(val)
         {
-        	if(val == undefined)
+        	for (var element in elements)
         	{
-        		return element.checked;
-        	}
-        	else
-        	{
-        		element.checked = val;
-        	}
+	        	if(val == undefined)
+	        	{
+	        		return elements[element].checked;
+	        	}
+	        	else
+	        	{
+	        		elements[element].checked = val;
+	        	}
+	        }
         },
         
 
