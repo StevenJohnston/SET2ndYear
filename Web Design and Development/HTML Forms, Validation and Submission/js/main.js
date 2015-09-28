@@ -2,8 +2,7 @@ var StuFacSelected = false;
 $SJ("window").ready(function(){
 	$SJ("#rStudent").click(function()
 	{
-		StuFacSelected =true;
-		clearChecks();
+		$SJ("*a").checked(false);
 		$SJ("#divFacCheck").style("display","none");
 		$SJ("#divStuCheck").style("display","block");
 
@@ -11,23 +10,12 @@ $SJ("window").ready(function(){
 	});
 	$SJ("#rFaculty").click(function()
 	{
-		StuFacSelected =true;
-		clearChecks();
+		$SJ("[a").checked(false);
 		$SJ("#divFacCheck").style("display","block");
 		$SJ("#divStuCheck").style("display","none");
 	});
 
 });
-function clearChecks()
-{
-	$SJ("#chkTeach").checked(false);
-	$SJ("#chkDrive").checked(false);
-	$SJ("#chkLunch").checked(false);
-	$SJ("#chkStudy").checked(false);
-	$SJ("#chkLaptop").checked(false);
-	$SJ("#chkBus").checked(false);
-	$SJ("#chkMusic").checked(false);
-}
 
 function validateRegisterForm()
 {
