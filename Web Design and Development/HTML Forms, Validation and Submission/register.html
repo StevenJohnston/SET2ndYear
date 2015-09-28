@@ -8,10 +8,22 @@
 http://pc-00224d503c23/testRequest.asp
 <body>
 	<form name="registerForm"  action="" onsubmit="return validateRegisterForm()" method="GET">
-		<label>Name <input type = "text" id="txtName"></label><br>
-		<label>Street <input type = "text" id="txtStreet"></label><br>
-		<label>City <input type="text" id="txtCity"></label><br>
-		<label>Province <select id="sProvince">
+	<table>
+	<tr>
+		<td><label>Name</label>
+		<td><input type = "text" id="txtName">
+	</tr> 
+	<tr>
+		<td><label>Street </label>
+		<td><input type = "text" id="txtStreet">
+	</tr>
+	<tr>
+		<td><label>City </label>
+		<td><input type="text" id="txtCity">
+	</tr>
+	<tr>
+		<td><label>Province </label>
+		<td><select id="sProvince">
 			<option value="NA">Select Province</option>
 			<option value="AB">Alberta</option>
 			<option value="BC">British Columbia</option>
@@ -26,10 +38,19 @@ http://pc-00224d503c23/testRequest.asp
 			<option value="NT">Northwest Territories</option>
 			<option value="NU">Nunavut</option>
 			<option value="YT">Yukon</option>
-		</select></label><br>
-		<label>Postal Code <input type="text" id="txtPostal"></label><br>
-		<input type="radio" id="rStudent" name="StuFac" value="Student"> Student <br>
+		</select>
+	</tr>
+	<tr>
+		<td><label>Postal Code </label>
+		<td><input type="text" id="txtPostal">
+	</tr>
+	<tr>
+		<td><input type="radio" id="rStudent" name="StuFac" value="Student"> Student <br>
+	
 		<input type="radio" id="rFaculty" name="StuFac" value="Faculty"> Faculty <br>
+	</tr>
+	</table>
+	
 		<div id="divFacCheck" style="display:none">
 			<input name = "a" id="chkTeach" type="checkbox"> Teach in Engineering
 			<input name = "a" id="chkDrive" type="checkbox"> Drive Car to Work
