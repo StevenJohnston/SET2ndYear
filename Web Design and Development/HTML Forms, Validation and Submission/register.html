@@ -5,9 +5,8 @@
 	<script src="js/sjquery.js"></script>
 	<script src="js/main.js"></script>
 </head>
-http://pc-00224d503c23/testRequest.asp
 <body>
-	<form name="registerForm"  action="" onsubmit="return validateRegisterForm()" method="GET">
+	<form name="registerForm"  action="http://pc-00224d503c23/testRequest.asp" onsubmit="return validateRegisterForm()" method="GET">
 	<table>
 	<tr>
 		<td><label>Name</label>
@@ -64,7 +63,8 @@ http://pc-00224d503c23/testRequest.asp
 		</div>
 		<input type="reset" value="Cancel">
 		<input type="Submit" value="Submit">
-
+		<div id="error">
+		</div>
 
 	</form>
 </body>
