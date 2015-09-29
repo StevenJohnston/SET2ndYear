@@ -3,14 +3,22 @@ $SJ("window").ready(function(){
 	$SJ("#rStudent").click(function()
 	{
 		StuFacSelected = true;
-		$SJ("input").checked(false);
+		var checkboxes = $SJ("input").getAttr("type","checkbox");
+		for(checkBox in checkboxes)
+		{
+			checkboxes[checkBox].checked = false;
+		}
 		$SJ("#divFacCheck").style("display","none");
 		$SJ("#divStuCheck").style("display","block");
 	});
 	$SJ("#rFaculty").click(function()
 	{
 		StuFacSelected = true;
-		$SJ("input").checked(false);
+		var checkboxes = $SJ("input").getAttr("type","checkbox");
+		for(checkBox in checkboxes)
+		{
+			checkboxes[checkBox].checked = false;
+		}
 		$SJ("#divFacCheck").style("display","block");
 		$SJ("#divStuCheck").style("display","none");
 	});
@@ -41,7 +49,7 @@ function validateRegisterForm()
 	if($SJ("#sProvince").selectedId()=="NA")
 	{
 		validationPass = false;
-		errorMessage += "Please select a province from the dropdown <br>";
+		errorMessage += "Please select a province from the drop down <br>";
 	}
 	if(StuFacSelected == false)
 	{
@@ -49,6 +57,9 @@ function validateRegisterForm()
 		errorMessage += "Please select Student or faculty form the radio buttons <br>";
 	}
 	if(!validationPass)
+	{
 		$SJ("#error").innerHTML(errorMessage);
+		$SJ("#error").style("backgroundColor","red");
+	}
 	return validationPass;
 }
