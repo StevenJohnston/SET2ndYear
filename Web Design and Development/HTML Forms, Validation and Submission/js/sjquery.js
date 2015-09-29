@@ -113,7 +113,9 @@ var $SJ = function(elementIn,stackLimiter) {
 	        				elements[element].style.display = val;
 	        			}
 	        			break;
-	        		case "background-color":
+	        		case "background-color": 
+					case "backgroundColor":
+					case "backgroundcolor":
 	        			if(val == undefined)
 	        			{
 	        				return elements[element].style.backgroundColor;
@@ -262,16 +264,35 @@ var $SJ = function(elementIn,stackLimiter) {
 		//	val: The value to set the attribute to. If not set function will return current value of attribute
 		//Return:
 		//	
-        attr: function(name,val){
+        setAttr: function(name, val){
+			var valElements =[];
+			if(val != undefined)
+			{
+				for (var element in elements)
+				{
+					elements[element].setAttribute(name,val);
+				}
+			}
+        },
+		getAttr: function(name,val)
+		{
+			var valElements =[];
         	for (var element in elements)
         	{
 	        	if(val == undefined){
-	        		return elements[element].getAttribute(name);
+	        		valElements.push(elements[element].getAttribute(name));
 	        	}else{
-		        	elements[element].setAttribute(name,val);
+		        	if(elements[element].hasAttribute(name))
+					{
+						if(elements[element].getAttribute(name) == val)
+						{	
+							valElements.push(elements[element]);
+						}
+					}
 	        	}
 	        }
-        },
+			return valElements;
+		},
     	//Name: keydown
 		//Decsription: Set function to be called when element's onkeydown function is called
 		//Param:
@@ -330,6 +351,6 @@ var $SJ = function(elementIn,stackLimiter) {
         	{
         		timedOut =true;
         	}
-        },
+        }
     }
 };
