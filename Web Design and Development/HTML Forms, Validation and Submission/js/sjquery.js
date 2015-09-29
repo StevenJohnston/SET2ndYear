@@ -49,11 +49,18 @@ var $SJ = function(elementIn,stackLimiter) {
 				if(elementIn == "window"){
 					elements.push(document.getElementsByTagName(elementIn));
 				}
+				else
+				{
+					newElements = document.getElementsByTagName(elementIn);
+					for(var i = 0; i < newElements.length;i++)
+					{
+						elements.push(newElements[i]);
+					}
+				}
 				break;
 		}
 	}
 
-	var elementIsArray = (elements.constructor === Array);
 	//Array of methods
     return {
     	//Name: innerHTML
@@ -63,10 +70,27 @@ var $SJ = function(elementIn,stackLimiter) {
 		//Return:
 		//	
         innerHTML: function(val) {
-        	for(var element in elements)
+        	if(val != undefined)
         	{
-            	elements[element].innerHTML = val;
-        	}
+	        	for(var element in elements)
+	        	{
+	            	elements[element].innerHTML = val;
+	        	}
+	        	return thisElement;
+	        }else
+	        {
+	        	var innerHTMLs = [];
+	        	for(var element in elements)
+	        	{
+	            	innerHTMLs.push(elements[element].innerHTML);
+	        	}
+	        	if(innerHTMLs.length == 1)
+	        	{
+	        		return innerHTMLs[0];
+	        	}
+	        	else
+	        		return innerHTMLs;
+	        }
         },
     	//Name: style
 		//Decsription: set specified style attribute to specified value
@@ -293,7 +317,19 @@ var $SJ = function(elementIn,stackLimiter) {
 	        	}
 	        }
         },
-        
+        delay: function(val)
+        {
+        	setTimeout(pause, val);
+        	var timedOut = false;
+        	while(!timedOut)
+        	{
 
+        	}
+        	return;
+        	function pause()
+        	{
+        		timedOut =true;
+        	}
+        },
     }
 };
