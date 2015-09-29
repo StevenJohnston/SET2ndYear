@@ -2,15 +2,15 @@ var StuFacSelected = false;
 $SJ("window").ready(function(){
 	$SJ("#rStudent").click(function()
 	{
-		$SJ("*a").checked(false);
+		StuFacSelected = true;
+		$SJ("input").checked(false);
 		$SJ("#divFacCheck").style("display","none");
 		$SJ("#divStuCheck").style("display","block");
-
-
 	});
 	$SJ("#rFaculty").click(function()
 	{
-		$SJ("[a").checked(false);
+		StuFacSelected = true;
+		$SJ("input").checked(false);
 		$SJ("#divFacCheck").style("display","block");
 		$SJ("#divStuCheck").style("display","none");
 	});
@@ -20,28 +20,35 @@ $SJ("window").ready(function(){
 function validateRegisterForm()
 {
 	var validationPass = true;
-	if(!/^[a-zA-Z]+$/.test($SJ("#txtName").value())){
+	var errorMessage = "";
+	if(!/^[a-zA-Z ]+$/.test($SJ("#txtName").value())){
 		validationPass = false;
+		errorMessage += "Name must consist of only letters and spaces <br>";
 	}
-	if(!/^[a-zA-Z]+$/.test($SJ("#txtStreet").value())){
+	if(!/^[a-zA-Z0-9 ]+$/.test($SJ("#txtStreet").value())){
 		validationPass = false;
+		errorMessage += "Street must consist of only letters, numbers, and spaces <br>";
 	}
 	if(!/^[a-zA-Z][0-9][a-zA-Z][ ]?[0-9][a-zA-Z][0-9]$/.test($SJ("#txtPostal").value()))
 	{
 		validationPass = false;
+		errorMessage += "Postal must be in format A1A1A1 with optional space <br>";
 	}
 	if(!/^[a-zA-Z]+$/.test($SJ("#txtCity").value())){
 		validationPass = false;
+		errorMessage += "City must be only letters <br>";
 	}
 	if($SJ("#sProvince").selectedId()=="NA")
 	{
 		validationPass = false;
+		errorMessage += "Please select a province from the dropdown <br>";
 	}
 	if(StuFacSelected == false)
 	{
 		validationPass = false;
+		errorMessage += "Please select Student or faculty form the radio buttons <br>";
 	}
 	if(!validationPass)
-		alert("eee");
+		$SJ("#error").innerHTML(errorMessage);
 	return validationPass;
 }
