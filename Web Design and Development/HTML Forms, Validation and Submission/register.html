@@ -10,19 +10,19 @@
 	<table>
 	<tr>
 		<td><label>Name</label>
-		<td><input type = "text" id="txtName">
+		<td><input name="name" type = "text" id="txtName">
 	</tr> 
 	<tr>
 		<td><label>Street </label>
-		<td><input type = "text" id="txtStreet">
+		<td><input name="street" type = "text" id="txtStreet">
 	</tr>
 	<tr>
 		<td><label>City </label>
-		<td><input type="text" id="txtCity">
+		<td><input name="city" type="text" id="txtCity">
 	</tr>
 	<tr>
 		<td><label>Province </label>
-		<td><select id="sProvince">
+		<td><select name="province" id="sProvince">
 			<option value="NA">Select Province</option>
 			<option value="AB">Alberta</option>
 			<option value="BC">British Columbia</option>
@@ -41,29 +41,29 @@
 	</tr>
 	<tr>
 		<td><label>Postal Code </label>
-		<td><input type="text" id="txtPostal">
+		<td><input name="postal code"type="text" id="txtPostal">
 	</tr>
 	<tr>
-		<td><input type="radio" id="rStudent" name="StuFac" value="Student"> Student <br>
+		<td><input type="radio" id="rStudent" name="memberType" value="Student"> Student <br>
 	
-		<input type="radio" id="rFaculty" name="StuFac" value="Faculty"> Faculty <br>
+		<input type="radio" id="rFaculty" name="memberType" value="Faculty"> Faculty <br>
 	</tr>
 	</table>
 	
 		<div id="divFacCheck" style="display:none">
-			<input name = "a" id="chkTeach" type="checkbox"> Teach in Engineering
-			<input name = "a" id="chkDrive" type="checkbox"> Drive Car to Work
-			<input name = "a" id="chkLunch" type="checkbox"> Bring Lunch
+			<input name = "Teach" id="chkTeach" type="checkbox"> Teach in Engineering
+			<input name = "Drive" id="chkDrive" type="checkbox"> Drive Car to Work
+			<input name = "Lunch" id="chkLunch" type="checkbox"> Bring Lunch
 		</div>
 		<div id="divStuCheck" style="display:none">
-			<input name = "a" id="chkStudy" type="checkbox"> Study in Information Technology
-			<input name = "a" id="chkLaptop" type="checkbox"> Own a Laptop Computer
-			<input name = "a" id="chkBus" type="checkbox"> Take Bus to School
-			<input name = "a" id="chkMusic" type="checkbox"> Own a Portable Music Player
+			<input name = "Study" id="chkStudy" type="checkbox"> Study in Information Technology
+			<input name = "Laptop" id="chkLaptop" type="checkbox"> Own a Laptop Computer
+			<input name = "Bus" id="chkBus" type="checkbox"> Take Bus to School
+			<input name = "Music" id="chkMusic" type="checkbox"> Own a Portable Music Player
 		</div>
 		<input type="reset" value="Cancel">
-		<input type="Submit" value="Submit">
-		<div id="error">
+		<input type="Submit" value="Submit"><br>
+		<div id="error" style="display:inline-block">
 		</div>
 
 	</form>
