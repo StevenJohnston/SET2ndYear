@@ -1,11 +1,24 @@
 <!DOCTYPE html>
+<!--
+	Name: Steven Johnston
+	Assignment 2: HTML Forms, Validation and Submission
+	Date: 9/30/2015
+	Description: simple form with simple validation to call be sent to a simple asp page
+
+	Note: I have created created like JQUERY rip off to make future assignments much quicker
+-->
 <html>
 <head>
 	<title>SET Registration</title>
-	<script src="js/sjquery.js"></script>
-	<script src="js/main.js"></script>
+	<script src="js/sjquery.js"></script> <!--sjquery.js holds all $SJ functionality-->
+	<script src="js/main.js"></script> <!--main.js holds functionlity of web page-->
 </head>
 <body>
+	<!--
+		onsubmit: if returns false action will no be called
+		action: url to submit form
+		method: how to send data to server. GET = in querystring
+	-->
 	<form name="registerForm"  action="http://pc-00224d503c23/testRequest.asp" onsubmit="return validateRegisterForm()" method="GET">
 	<table>
 	<tr>
