@@ -13,9 +13,8 @@
 //Return:
 //	An array with a list of all the methods
 var $SJ = function(elementIn,stackLimiter) {
-	//Second version of its self allows for easier method calls (on same element)
-	var thisElement ;
-	var elements = [];
+	var thisElement ; //Second version of its self allows for easier method calls (on same element)
+	var elements = []; //Helps return an array rather then a nodeList
 	if(stackLimiter == undefined){
 		thisElement = $SJ(elementIn,"defined");
 	}
@@ -257,11 +256,11 @@ var $SJ = function(elementIn,stackLimiter) {
 	        	}
 	        }
         },
-    	//Name: attr
-		//Decsription: Get or Set attribute of element
+    	//Name: setAttr
+		//Decsription: set Attribute of elements to val
 		//Param:
-		//	name: The name of the element to get
-		//	val: The value to set the attribute to. If not set function will return current value of attribute
+		//	name: The name of the attribute to set
+		//	val: The value to set the attribute to. If not defined nothing happens
 		//Return:
 		//	
         setAttr: function(name, val){
@@ -274,6 +273,13 @@ var $SJ = function(elementIn,stackLimiter) {
 				}
 			}
         },
+    	//Name: getAttr
+		//Decsription: Get attribute of element(s)
+		//Param:
+		//	name: The name of the element to get
+		//	val: if set get elements with matching attribute name and value else get all element names
+		//Return:
+		//	Elements that match parameters
 		getAttr: function(name,val)
 		{
 			var valElements =[];
@@ -317,6 +323,12 @@ var $SJ = function(elementIn,stackLimiter) {
         		elements[element].focus();
         	}
         },
+    	//Name: selectedId
+		//Decsription: gets selected id of element
+		//Param:
+		//	
+		//Return:
+		//	selecteid(s) of element
         selectedId: function()
         {
         	for (var element in elements)
@@ -324,6 +336,12 @@ var $SJ = function(elementIn,stackLimiter) {
         		return elements[element].options[elements[element].selectedIndex].value;
         	}
         },
+    	//Name: checked
+		//Decsription: sets checked value of elements to val (true or false)
+		//Param:
+		//	val: value to set elements to
+		//Return:
+		//	
         checked: function(val)
         {
         	for (var element in elements)
@@ -338,19 +356,5 @@ var $SJ = function(elementIn,stackLimiter) {
 	        	}
 	        }
         },
-        delay: function(val)
-        {
-        	setTimeout(pause, val);
-        	var timedOut = false;
-        	while(!timedOut)
-        	{
-
-        	}
-        	return;
-        	function pause()
-        	{
-        		timedOut =true;
-        	}
-        }
     }
 };
