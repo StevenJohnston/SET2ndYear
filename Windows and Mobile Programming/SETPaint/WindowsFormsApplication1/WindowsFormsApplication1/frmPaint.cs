@@ -89,7 +89,7 @@ namespace SETPaint
         private void pctFillColour_Click(object sender, EventArgs e)
         {
             getColor(ref cFill);
-            ptcLineColour.BackColor = cLine;
+            pctFillColour.BackColor = cFill;
         }
 
         private void pnlPane_Paint(object sender, PaintEventArgs e)
@@ -99,8 +99,7 @@ namespace SETPaint
             {
                 drawObject.drawShape(g);
             }
-            Pen pen = new Pen(cLine);
-            //g.DrawLine(pen,mouseDown,mousePosition);
+            newShape.drawShape(g);
         }
 
         private void pnlPane_MouseMove(object sender, MouseEventArgs e)
@@ -124,6 +123,11 @@ namespace SETPaint
             mouseUp = e.Location;
             drawObjects.Add(newShape);
             pnlPane.Invalidate();
+        }
+
+        private void txtThickness_TextChanged(object sender, EventArgs e)
+        {
+            
         }
     }
 }

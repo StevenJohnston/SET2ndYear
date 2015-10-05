@@ -136,10 +136,10 @@
             // 
             this.pnlOptions.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.pnlOptions.Controls.Add(this.ptcLineColour);
-            this.pnlOptions.Controls.Add(this.pnlShape);
             this.pnlOptions.Controls.Add(this.lblLineColour);
             this.pnlOptions.Controls.Add(this.pnlLine);
             this.pnlOptions.Controls.Add(this.pctSelectedTool);
+            this.pnlOptions.Controls.Add(this.pnlShape);
             this.pnlOptions.Location = new System.Drawing.Point(0, 0);
             this.pnlOptions.Name = "pnlOptions";
             this.pnlOptions.Size = new System.Drawing.Size(1004, 40);
@@ -221,6 +221,7 @@
             this.txtThickness.Name = "txtThickness";
             this.txtThickness.Size = new System.Drawing.Size(62, 35);
             this.txtThickness.TabIndex = 1;
+            this.txtThickness.TextChanged += new System.EventHandler(this.txtThickness_TextChanged);
             // 
             // pctSelectedTool
             // 
