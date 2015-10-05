@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApplication1", "WindowsFormsApplication1\WindowsFormsApplication1.csproj", "{C73B8101-B1C2-457A-8811-3F9255A46970}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SETPaint", "WindowsFormsApplication1\SETPaint.csproj", "{C73B8101-B1C2-457A-8811-3F9255A46970}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
