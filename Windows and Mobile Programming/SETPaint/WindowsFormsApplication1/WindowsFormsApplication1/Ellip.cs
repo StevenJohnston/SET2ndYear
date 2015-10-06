@@ -8,19 +8,30 @@ using System.Windows.Forms;
 
 namespace SETPaint
 {
+    [Serializable]
     class Ellip: Shape
     {
-        protected SolidBrush mySBrush;
-        public Ellip(Color color, float width) : base(color,width)
+        //protected SolidBrush mySBrush;
+        Color brushColor;
+        public Ellip(Color penColor,Color brushColor, float width) : base(penColor,width)
         {
-            mySBrush = new SolidBrush(color);
+            this.brushColor = brushColor;
+            //mySBrush = new SolidBrush(brushColor);
         }
         public override void drawShape(Graphics e)
         {
-            e.DrawEllipse(myPen, rect);
-            if (!notFullDraw)
+            base.drawShape(e);
+            //e.DrawEllipse(myPen, rect);
+            Pen myPen = new Pen(penColor, penWidth);
+            if (notFullDraw)
             {
-                e.FillEllipse(mySBrush,rect);
+                myPen.DashPattern = penPattern;
+                e.DrawEllipse(myPen, rect);
+            }
+            else
+            {
+                e.DrawEllipse(myPen, rect);
+                e.FillEllipse(new SolidBrush(brushColor), rect);
             }
         }
 
