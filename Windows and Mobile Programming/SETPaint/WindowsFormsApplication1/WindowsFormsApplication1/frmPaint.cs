@@ -137,6 +137,7 @@ namespace SETPaint
         {
             mouseIsDown = false;
             mouseUp = e.Location;
+            newShape.midDraw(e);
             newShape.notFullDraw = false;
             drawObjects.Add(newShape);
             objectCreated = false;
@@ -201,28 +202,38 @@ namespace SETPaint
 
         private void tsmiOpen_Click(object sender, EventArgs e)
         {
-            string dir = @"c:\temp";
-            string serializationFile = Path.Combine(dir, "Shapes.bin");
-            using (Stream stream = File.Open(serializationFile, FileMode.Open))
+            OpenFileDialog openFile = new OpenFileDialog();
+            openFile.Filter = "SET Paint(.sp)|*.sp";
+            openFile.FilterIndex = 1;
+            openFile.Multiselect = true;
+            if (openFile.ShowDialog() == DialogResult.OK)
             {
-                var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                Stream fileIn = openFile.OpenFile();
+                using (fileIn)
+                {
+                    var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 
-                drawObjects = (List<Shape>)bformatter.Deserialize(stream);
+                    drawObjects = (List<Shape>)bformatter.Deserialize(fileIn);
+                }
+                pnlPane.Invalidate();
             }
-            pnlPane.Invalidate();
         }
 
         private void tsmiSave_Click(object sender, EventArgs e)
         {
-            string dir = @"c:\temp";
-            string serializationFile = Path.Combine(dir, "Shapes.bin");
-
-            //serialize
-            using (Stream stream = File.Open(serializationFile, FileMode.Create))
+            SaveFileDialog saveFile = new SaveFileDialog();
+            saveFile.Filter = "SET Paint(.sp)|*.sp";
+            saveFile.FilterIndex = 1;
+            if (saveFile.ShowDialog() == DialogResult.OK)
             {
-                var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                Stream fileOut = saveFile.OpenFile();
+                using (fileOut)
+                {
+                    var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 
-                bformatter.Serialize(stream, drawObjects);
+                    bformatter.Serialize(fileOut, drawObjects);
+                }
+                pnlPane.Invalidate();
             }
         }
     }
