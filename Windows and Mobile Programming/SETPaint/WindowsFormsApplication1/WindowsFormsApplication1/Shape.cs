@@ -8,18 +8,36 @@ using System.Windows.Forms;
 
 namespace SETPaint
 {
+    [Serializable]
     class Shape
     {
-        protected Pen myPen { get; set; }
-        protected bool notFullDraw { get; set; }
+        //protected Pen myPen { get; set; }
+        protected Color penColor;
+        protected float penWidth;
+        protected float[] penPattern;
+        public bool notFullDraw { get; set; }
         protected Rectangle rect;
+        public Shape()
+        {
+        }
         public Shape(Color color, float width)
         {
-            myPen = new Pen(color,width);
+            //myPen = new Pen(color,width);
+            penColor = color;
+            penWidth = width;
+            //myPen.DashPattern = new float[] { 2f, 0.25f };
+            penPattern = new float[] { 2f, 0.25f };
             rect = new Rectangle();
         }
 
-        public virtual void drawShape(Graphics e) { }
+        public virtual void drawShape(Graphics e)
+        {
+            if (!notFullDraw)
+            {
+                //myPen = new Pen(myPen.Color, myPen.Width);
+                penPattern = null;
+            }
+        }
         public void startDraw(MouseEventArgs e)
         {
             rect.X = e.X;
@@ -27,5 +45,6 @@ namespace SETPaint
         }
 
         public virtual void midDraw(MouseEventArgs e){}
+
     }
 }
