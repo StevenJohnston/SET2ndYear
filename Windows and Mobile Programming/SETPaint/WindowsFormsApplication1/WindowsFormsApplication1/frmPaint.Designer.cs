@@ -45,7 +45,7 @@
             this.pctFillColour = new System.Windows.Forms.PictureBox();
             this.lblFillColour = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.ptcIcon = new System.Windows.Forms.PictureBox();
             this.pnlMenuBar = new System.Windows.Forms.Panel();
             this.mnuFile = new System.Windows.Forms.MenuStrip();
             this.tsmFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,7 +53,10 @@
             this.tsmiOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiSave = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmHelp = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlPane = new SETPaint.Pane();
+            this.label1 = new System.Windows.Forms.Label();
             this.pnlToolBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pctEllip)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctRect)).BeginInit();
@@ -64,7 +67,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pctSelectedTool)).BeginInit();
             this.pnlShape.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pctFillColour)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ptcIcon)).BeginInit();
             this.pnlMenuBar.SuspendLayout();
             this.mnuFile.SuspendLayout();
             this.SuspendLayout();
@@ -113,11 +116,12 @@
             // 
             // frmStatbar
             // 
-            this.frmStatbar.Location = new System.Drawing.Point(0, 669);
+            
+            this.frmStatbar.Location = new System.Drawing.Point(0, 703);
             this.frmStatbar.Name = "frmStatbar";
             this.frmStatbar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.mousePos});
-            this.frmStatbar.Size = new System.Drawing.Size(1004, 22);
+            this.frmStatbar.Size = new System.Drawing.Size(1013, 24);
             this.frmStatbar.TabIndex = 2;
             // 
             // mousePos
@@ -232,18 +236,19 @@
             this.btnClose.UseVisualStyleBackColor = false;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
-            // pictureBox1
+            // ptcIcon
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(27, 27);
-            this.pictureBox1.TabIndex = 5;
-            this.pictureBox1.TabStop = false;
+            this.ptcIcon.Image = ((System.Drawing.Image)(resources.GetObject("ptcIcon.Image")));
+            this.ptcIcon.Location = new System.Drawing.Point(0, 0);
+            this.ptcIcon.Name = "ptcIcon";
+            this.ptcIcon.Size = new System.Drawing.Size(27, 27);
+            this.ptcIcon.TabIndex = 5;
+            this.ptcIcon.TabStop = false;
             // 
             // pnlMenuBar
             // 
             this.pnlMenuBar.Controls.Add(this.mnuFile);
-            this.pnlMenuBar.Location = new System.Drawing.Point(27, 0);
+            this.pnlMenuBar.Location = new System.Drawing.Point(33, 0);
             this.pnlMenuBar.Name = "pnlMenuBar";
             this.pnlMenuBar.Size = new System.Drawing.Size(172, 27);
             this.pnlMenuBar.TabIndex = 6;
@@ -253,7 +258,8 @@
             this.mnuFile.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.mnuFile.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.mnuFile.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmFile});
+            this.tsmFile,
+            this.tsmHelp});
             this.mnuFile.Location = new System.Drawing.Point(0, 0);
             this.mnuFile.Name = "mnuFile";
             this.mnuFile.Size = new System.Drawing.Size(172, 25);
@@ -275,29 +281,44 @@
             // tsmiNew
             // 
             this.tsmiNew.Name = "tsmiNew";
-            this.tsmiNew.Size = new System.Drawing.Size(152, 22);
+            this.tsmiNew.Size = new System.Drawing.Size(144, 22);
             this.tsmiNew.Text = "New (Clear)";
             // 
             // tsmiOpen
             // 
             this.tsmiOpen.Name = "tsmiOpen";
-            this.tsmiOpen.Size = new System.Drawing.Size(152, 22);
+            this.tsmiOpen.Size = new System.Drawing.Size(144, 22);
             this.tsmiOpen.Text = "Open";
             this.tsmiOpen.Click += new System.EventHandler(this.tsmiOpen_Click);
             // 
             // tsmiSave
             // 
             this.tsmiSave.Name = "tsmiSave";
-            this.tsmiSave.Size = new System.Drawing.Size(152, 22);
+            this.tsmiSave.Size = new System.Drawing.Size(144, 22);
             this.tsmiSave.Text = "Save";
             this.tsmiSave.Click += new System.EventHandler(this.tsmiSave_Click);
             // 
             // tsmiExit
             // 
             this.tsmiExit.Name = "tsmiExit";
-            this.tsmiExit.Size = new System.Drawing.Size(152, 22);
+            this.tsmiExit.Size = new System.Drawing.Size(144, 22);
             this.tsmiExit.Text = "Exit";
             this.tsmiExit.Click += new System.EventHandler(this.tsmiExit_Click);
+            // 
+            // tsmHelp
+            // 
+            this.tsmHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmiAbout});
+            this.tsmHelp.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.tsmHelp.Name = "tsmHelp";
+            this.tsmHelp.Size = new System.Drawing.Size(47, 21);
+            this.tsmHelp.Text = "Help";
+            // 
+            // tsmiAbout
+            // 
+            this.tsmiAbout.Name = "tsmiAbout";
+            this.tsmiAbout.Size = new System.Drawing.Size(111, 22);
+            this.tsmiAbout.Text = "About";
             // 
             // pnlPane
             // 
@@ -313,20 +334,32 @@
             this.pnlPane.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pnlPane_MouseMove);
             this.pnlPane.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pnlPane_MouseUp);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.label1.Location = new System.Drawing.Point(6, 705);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(35, 13);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "label1";
+            // 
             // frmPaint
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.ClientSize = new System.Drawing.Size(1004, 691);
+            this.ClientSize = new System.Drawing.Size(1013, 727);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.pnlMenuBar);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.ptcIcon);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.pnlPane);
             this.Controls.Add(this.pnlToolBox);
             this.Controls.Add(this.frmStatbar);
             this.Controls.Add(this.pnlOptions);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Name = "frmPaint";
             this.Text = "SET Paint";
@@ -346,12 +379,13 @@
             this.pnlShape.ResumeLayout(false);
             this.pnlShape.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pctFillColour)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ptcIcon)).EndInit();
             this.pnlMenuBar.ResumeLayout(false);
             this.pnlMenuBar.PerformLayout();
             this.mnuFile.ResumeLayout(false);
             this.mnuFile.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -375,7 +409,7 @@
         private System.Windows.Forms.PictureBox pctLineColour;
         private System.Windows.Forms.Label lblLineColour;
         private System.Windows.Forms.Button btnClose;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox ptcIcon;
         private System.Windows.Forms.Panel pnlMenuBar;
         private System.Windows.Forms.MenuStrip mnuFile;
         private System.Windows.Forms.ToolStripMenuItem tsmFile;
@@ -383,6 +417,9 @@
         private System.Windows.Forms.ToolStripMenuItem tsmiOpen;
         private System.Windows.Forms.ToolStripMenuItem tsmiSave;
         private System.Windows.Forms.ToolStripMenuItem tsmiExit;
+        private System.Windows.Forms.ToolStripMenuItem tsmHelp;
+        private System.Windows.Forms.ToolStripMenuItem tsmiAbout;
+        private System.Windows.Forms.Label label1;
     }
 }
 
