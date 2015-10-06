@@ -8,21 +8,45 @@ using System.Windows.Forms;
 
 namespace SETPaint
 {
+    [Serializable]
     class Rect : Shape
     {
-        private SolidBrush mySBrush;
-        public Rect(Color color, float width) : base(color, width)
+        //private SolidBrush mySBrush;
+        Color brushColor;
+        public Rect(Color penColor, Color brushColor, float width) : base(penColor, width)
         {
-            mySBrush = new SolidBrush(color);
+            this.brushColor = brushColor;
+            //mySBrush = new SolidBrush(brushColor);
         }
         public override void drawShape(Graphics e)
         {
-            e.DrawRectangle(myPen,rect);
-            if (!notFullDraw)
+            base.drawShape(e);
+            Rectangle newRect = rect;
+            if (rect.Width < 0)
             {
-                e.FillRectangle(mySBrush, rect);
+                newRect.X = rect.X + rect.Width;
+                newRect.Width = Math.Abs(rect.Width);
+            }
+            if (rect.Height < 0)
+            {
+                newRect.Y = rect.Y + rect.Height;
+                newRect.Height = Math.Abs(rect.Height);
+            }
+            //e.DrawRectangle(myPen, newRect);
+
+            Pen myPen = new Pen(penColor, penWidth);
+            if (notFullDraw)
+            {
+                myPen.DashPattern = penPattern;
+                e.DrawRectangle(myPen, newRect);
+            }
+            else
+            {
+                e.DrawRectangle(myPen, newRect);
+                e.FillRectangle(new SolidBrush(brushColor), newRect);
             }
         }
+        
         public override void midDraw(MouseEventArgs e)
         {
             
