@@ -11,7 +11,7 @@ namespace SETPaint
     {
         public Pane()
         {
-            this.DoubleBuffered = true;
+            DoubleBuffered = true;
         }
     }
 }
