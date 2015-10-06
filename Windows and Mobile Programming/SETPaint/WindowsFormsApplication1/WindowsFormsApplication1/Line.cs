@@ -6,21 +6,35 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SETPaint 
+namespace SETPaint
 {
+    [Serializable]
     class Line : Shape
     {
         public Line() : base(new Color(), 0f)
         {
-            MessageBox.Show("sss");
+            
         }
         public Line(Color color , float width) : base(color,width)
         {
-            myPen = new Pen(color, width);
         }
         public override void drawShape(Graphics e)
         {
-            e.DrawLine(myPen,new Point(rect.X,rect.Y),new Point(rect.Width,rect.Height));
+            base.drawShape(e);
+
+            if (notFullDraw)
+            {
+                //e.DrawLine(myPen, new Point(rect.X, rect.Y), new Point(rect.Width, rect.Height));
+                Pen myPen = new Pen(penColor, penWidth);
+                myPen.DashPattern = penPattern;
+                e.DrawLine(myPen, new Point(rect.X, rect.Y), new Point(rect.Width, rect.Height));
+            }
+            else
+            {
+                Pen myPen = new Pen(penColor,penWidth);
+                myPen.DashPattern = new float[] { 1f };
+                e.DrawLine(myPen, new Point(rect.X, rect.Y), new Point(rect.Width, rect.Height));
+            }
         }
 
         public override void midDraw(MouseEventArgs e)
