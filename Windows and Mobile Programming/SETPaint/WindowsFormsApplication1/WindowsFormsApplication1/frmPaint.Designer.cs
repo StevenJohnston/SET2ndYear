@@ -33,8 +33,6 @@
             this.pctEllip = new System.Windows.Forms.PictureBox();
             this.pctRect = new System.Windows.Forms.PictureBox();
             this.pctLine = new System.Windows.Forms.PictureBox();
-            this.frmStatbar = new System.Windows.Forms.StatusBar();
-            this.mousePos = new System.Windows.Forms.StatusBarPanel();
             this.pnlOptions = new System.Windows.Forms.Panel();
             this.lblLineThickness = new System.Windows.Forms.Label();
             this.pctLineColour = new System.Windows.Forms.PictureBox();
@@ -55,13 +53,14 @@
             this.tsmiExit = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiAbout = new System.Windows.Forms.ToolStripMenuItem();
+            this.lblTitle = new System.Windows.Forms.Label();
+            this.pnlStatus = new System.Windows.Forms.Panel();
+            this.lblMouse = new System.Windows.Forms.Label();
             this.pnlPane = new SETPaint.Pane();
-            this.label1 = new System.Windows.Forms.Label();
             this.pnlToolBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pctEllip)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctRect)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctLine)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.mousePos)).BeginInit();
             this.pnlOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pctLineColour)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctSelectedTool)).BeginInit();
@@ -70,6 +69,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.ptcIcon)).BeginInit();
             this.pnlMenuBar.SuspendLayout();
             this.mnuFile.SuspendLayout();
+            this.pnlStatus.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlToolBox
@@ -79,7 +79,7 @@
             this.pnlToolBox.Controls.Add(this.pctEllip);
             this.pnlToolBox.Controls.Add(this.pctRect);
             this.pnlToolBox.Controls.Add(this.pctLine);
-            this.pnlToolBox.Location = new System.Drawing.Point(0, 68);
+            this.pnlToolBox.Location = new System.Drawing.Point(0, 104);
             this.pnlToolBox.Name = "pnlToolBox";
             this.pnlToolBox.Size = new System.Drawing.Size(40, 630);
             this.pnlToolBox.TabIndex = 0;
@@ -114,24 +114,6 @@
             this.pctLine.TabStop = false;
             this.pctLine.Click += new System.EventHandler(this.pctLine_Click);
             // 
-            // frmStatbar
-            // 
-            
-            this.frmStatbar.Location = new System.Drawing.Point(0, 703);
-            this.frmStatbar.Name = "frmStatbar";
-            this.frmStatbar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
-            this.mousePos});
-            this.frmStatbar.Size = new System.Drawing.Size(1013, 24);
-            this.frmStatbar.TabIndex = 2;
-            // 
-            // mousePos
-            // 
-            this.mousePos.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Spring;
-            this.mousePos.Name = "mousePos";
-            this.mousePos.Text = "Application started. No action yet.";
-            this.mousePos.ToolTipText = "Last Activity";
-            this.mousePos.Width = 988;
-            // 
             // pnlOptions
             // 
             this.pnlOptions.BackColor = System.Drawing.SystemColors.ControlDarkDark;
@@ -141,7 +123,7 @@
             this.pnlOptions.Controls.Add(this.lblLineColour);
             this.pnlOptions.Controls.Add(this.pctSelectedTool);
             this.pnlOptions.Controls.Add(this.pnlShape);
-            this.pnlOptions.Location = new System.Drawing.Point(0, 27);
+            this.pnlOptions.Location = new System.Drawing.Point(0, 63);
             this.pnlOptions.Name = "pnlOptions";
             this.pnlOptions.Size = new System.Drawing.Size(1004, 40);
             this.pnlOptions.TabIndex = 3;
@@ -238,17 +220,19 @@
             // 
             // ptcIcon
             // 
+            this.ptcIcon.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ptcIcon.Image = ((System.Drawing.Image)(resources.GetObject("ptcIcon.Image")));
             this.ptcIcon.Location = new System.Drawing.Point(0, 0);
+            this.ptcIcon.Margin = new System.Windows.Forms.Padding(0);
             this.ptcIcon.Name = "ptcIcon";
-            this.ptcIcon.Size = new System.Drawing.Size(27, 27);
+            this.ptcIcon.Size = new System.Drawing.Size(40, 35);
             this.ptcIcon.TabIndex = 5;
             this.ptcIcon.TabStop = false;
             // 
             // pnlMenuBar
             // 
             this.pnlMenuBar.Controls.Add(this.mnuFile);
-            this.pnlMenuBar.Location = new System.Drawing.Point(33, 0);
+            this.pnlMenuBar.Location = new System.Drawing.Point(1, 33);
             this.pnlMenuBar.Name = "pnlMenuBar";
             this.pnlMenuBar.Size = new System.Drawing.Size(172, 27);
             this.pnlMenuBar.TabIndex = 6;
@@ -283,6 +267,7 @@
             this.tsmiNew.Name = "tsmiNew";
             this.tsmiNew.Size = new System.Drawing.Size(144, 22);
             this.tsmiNew.Text = "New (Clear)";
+            this.tsmiNew.Click += new System.EventHandler(this.tsmiNew_Click);
             // 
             // tsmiOpen
             // 
@@ -319,13 +304,45 @@
             this.tsmiAbout.Name = "tsmiAbout";
             this.tsmiAbout.Size = new System.Drawing.Size(111, 22);
             this.tsmiAbout.Text = "About";
+            this.tsmiAbout.Click += new System.EventHandler(this.tsmiAbout_Click);
+            // 
+            // lblTitle
+            // 
+            this.lblTitle.AutoSize = true;
+            this.lblTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitle.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.lblTitle.Location = new System.Drawing.Point(38, 9);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new System.Drawing.Size(169, 16);
+            this.lblTitle.TabIndex = 8;
+            this.lblTitle.Text = "SET Paint - New Document";
+            this.lblTitle.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frmPaint_MouseDown);
+            this.lblTitle.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frmPaint_MouseMove);
+            // 
+            // pnlStatus
+            // 
+            this.pnlStatus.Controls.Add(this.lblMouse);
+            this.pnlStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlStatus.Location = new System.Drawing.Point(0, 734);
+            this.pnlStatus.Name = "pnlStatus";
+            this.pnlStatus.Size = new System.Drawing.Size(1008, 25);
+            this.pnlStatus.TabIndex = 9;
+            // 
+            // lblMouse
+            // 
+            this.lblMouse.AutoSize = true;
+            this.lblMouse.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.lblMouse.Location = new System.Drawing.Point(6, 3);
+            this.lblMouse.Name = "lblMouse";
+            this.lblMouse.Size = new System.Drawing.Size(0, 13);
+            this.lblMouse.TabIndex = 0;
             // 
             // pnlPane
             // 
             this.pnlPane.BackColor = System.Drawing.Color.White;
             this.pnlPane.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.pnlPane.ForeColor = System.Drawing.Color.White;
-            this.pnlPane.Location = new System.Drawing.Point(40, 67);
+            this.pnlPane.Location = new System.Drawing.Point(40, 103);
             this.pnlPane.Name = "pnlPane";
             this.pnlPane.Size = new System.Drawing.Size(964, 630);
             this.pnlPane.TabIndex = 1;
@@ -334,29 +351,19 @@
             this.pnlPane.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pnlPane_MouseMove);
             this.pnlPane.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pnlPane_MouseUp);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.label1.Location = new System.Drawing.Point(6, 705);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 7;
-            this.label1.Text = "label1";
-            // 
             // frmPaint
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.ClientSize = new System.Drawing.Size(1013, 727);
-            this.Controls.Add(this.label1);
+            this.ClientSize = new System.Drawing.Size(1008, 759);
+            this.Controls.Add(this.pnlStatus);
+            this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.pnlMenuBar);
             this.Controls.Add(this.ptcIcon);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.pnlPane);
             this.Controls.Add(this.pnlToolBox);
-            this.Controls.Add(this.frmStatbar);
             this.Controls.Add(this.pnlOptions);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -371,7 +378,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pctEllip)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctRect)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctLine)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.mousePos)).EndInit();
             this.pnlOptions.ResumeLayout(false);
             this.pnlOptions.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pctLineColour)).EndInit();
@@ -384,6 +390,8 @@
             this.pnlMenuBar.PerformLayout();
             this.mnuFile.ResumeLayout(false);
             this.mnuFile.PerformLayout();
+            this.pnlStatus.ResumeLayout(false);
+            this.pnlStatus.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -397,8 +405,6 @@
         private System.Windows.Forms.PictureBox pctLine;
         //private System.Windows.Forms.Panel pnlPane;
         private Pane pnlPane;
-        private System.Windows.Forms.StatusBar frmStatbar;
-        private System.Windows.Forms.StatusBarPanel mousePos;
         private System.Windows.Forms.Panel pnlOptions;
         private System.Windows.Forms.PictureBox pctSelectedTool;
         private System.Windows.Forms.TextBox txtThickness;
@@ -419,7 +425,9 @@
         private System.Windows.Forms.ToolStripMenuItem tsmiExit;
         private System.Windows.Forms.ToolStripMenuItem tsmHelp;
         private System.Windows.Forms.ToolStripMenuItem tsmiAbout;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Panel pnlStatus;
+        private System.Windows.Forms.Label lblMouse;
     }
 }
 

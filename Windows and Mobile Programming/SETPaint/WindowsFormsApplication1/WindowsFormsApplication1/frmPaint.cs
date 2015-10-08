@@ -14,6 +14,18 @@ namespace SETPaint
     enum Tool: int{ line, rect, elli };
     public partial class frmPaint : Form
     {
+        //Wanted to add shadow had no clue, thankfuly there is this guy
+        //http://stackoverflow.com/a/16495142/5348487
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                const int CS_DROPSHADOW = 0x20000;
+                CreateParams cp = base.CreateParams;
+                cp.ClassStyle |= CS_DROPSHADOW;
+                return cp;
+            }
+        }
         int selectedTool = 0;
         Type[] shapeTypes;
         PictureBox[] tools;
@@ -109,8 +121,9 @@ namespace SETPaint
 
         private void pnlPane_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left && newShape != null)
             {
+                lblMouse.Text = e.X + ", "+ e.Y+ " px";
                 newShape.midDraw(e);
                 pnlPane.Invalidate();
             }
@@ -135,13 +148,17 @@ namespace SETPaint
 
         private void pnlPane_MouseUp(object sender, MouseEventArgs e)
         {
-            mouseIsDown = false;
-            mouseUp = e.Location;
-            newShape.midDraw(e);
-            newShape.notFullDraw = false;
-            drawObjects.Add(newShape);
-            objectCreated = false;
-            pnlPane.Invalidate();
+            if (mouseIsDown)
+            {
+                lblMouse.Text = "";
+                mouseIsDown = false;
+                mouseUp = e.Location;
+                newShape.midDraw(e);
+                newShape.notFullDraw = false;
+                drawObjects.Add(newShape);
+                objectCreated = false;
+                pnlPane.Invalidate();
+            }
         }
 
         private void txtThickness_TextChanged(object sender, EventArgs e)
@@ -208,6 +225,7 @@ namespace SETPaint
             openFile.Multiselect = true;
             if (openFile.ShowDialog() == DialogResult.OK)
             {
+                drawObjects.Clear();
                 Stream fileIn = openFile.OpenFile();
                 using (fileIn)
                 {
@@ -217,6 +235,7 @@ namespace SETPaint
                 }
                 pnlPane.Invalidate();
             }
+            lblTitle.Text = "SET Paint - " + openFile.FileName.Substring(openFile.FileName.LastIndexOf(@"\")+1);
         }
 
         private void tsmiSave_Click(object sender, EventArgs e)
@@ -235,6 +254,24 @@ namespace SETPaint
                 }
                 pnlPane.Invalidate();
             }
+
+            lblTitle.Text = "SET Paint - " + saveFile.FileName.Substring(saveFile.FileName.LastIndexOf(@"\") + 1);
+        }
+
+        private void tsmiNew_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("New document will erase current", "New Document", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                drawObjects.Clear();
+                pnlPane.Invalidate();
+            }
+        }
+
+        private void tsmiAbout_Click(object sender, EventArgs e)
+        {
+            AboutBox newBox = new AboutBox();
+            newBox.ShowDialog();
         }
     }
 }
