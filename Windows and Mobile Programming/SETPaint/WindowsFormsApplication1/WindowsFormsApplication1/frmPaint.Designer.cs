@@ -81,7 +81,7 @@
             this.pnlToolBox.Controls.Add(this.pctLine);
             this.pnlToolBox.Location = new System.Drawing.Point(0, 104);
             this.pnlToolBox.Name = "pnlToolBox";
-            this.pnlToolBox.Size = new System.Drawing.Size(40, 630);
+            this.pnlToolBox.Size = new System.Drawing.Size(40, 629);
             this.pnlToolBox.TabIndex = 0;
             // 
             // pctEllip
@@ -92,7 +92,7 @@
             this.pctEllip.Size = new System.Drawing.Size(40, 40);
             this.pctEllip.TabIndex = 2;
             this.pctEllip.TabStop = false;
-            this.pctEllip.Click += new System.EventHandler(this.pctEllip_Click);
+            this.pctEllip.Click += new System.EventHandler(this.toolSelect);
             // 
             // pctRect
             // 
@@ -102,7 +102,7 @@
             this.pctRect.Size = new System.Drawing.Size(40, 40);
             this.pctRect.TabIndex = 1;
             this.pctRect.TabStop = false;
-            this.pctRect.Click += new System.EventHandler(this.pctRect_Click);
+            this.pctRect.Click += new System.EventHandler(this.toolSelect);
             // 
             // pctLine
             // 
@@ -112,7 +112,7 @@
             this.pctLine.Size = new System.Drawing.Size(40, 40);
             this.pctLine.TabIndex = 0;
             this.pctLine.TabStop = false;
-            this.pctLine.Click += new System.EventHandler(this.pctLine_Click);
+            this.pctLine.Click += new System.EventHandler(this.toolSelect);
             // 
             // pnlOptions
             // 
@@ -323,10 +323,12 @@
             // 
             this.pnlStatus.Controls.Add(this.lblMouse);
             this.pnlStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlStatus.Location = new System.Drawing.Point(0, 734);
+            this.pnlStatus.Location = new System.Drawing.Point(0, 739);
             this.pnlStatus.Name = "pnlStatus";
-            this.pnlStatus.Size = new System.Drawing.Size(1008, 25);
+            this.pnlStatus.Size = new System.Drawing.Size(1008, 20);
             this.pnlStatus.TabIndex = 9;
+            this.pnlStatus.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frmPaint_MouseDown);
+            this.pnlStatus.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frmPaint_MouseMove);
             // 
             // lblMouse
             // 
@@ -370,7 +372,6 @@
             this.KeyPreview = true;
             this.Name = "frmPaint";
             this.Text = "SET Paint";
-            this.Load += new System.EventHandler(this.frmPaint_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmPaint_KeyDown);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frmPaint_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frmPaint_MouseMove);

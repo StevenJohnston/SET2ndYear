@@ -22,28 +22,30 @@ namespace SETPaint
         {
             base.drawShape(e);
             Rectangle newRect = rect;
-            if (rect.Width < 0)
+            using (Pen myPen = new Pen(penColor, penWidth))
             {
-                newRect.X = rect.X + rect.Width;
-                newRect.Width = Math.Abs(rect.Width);
-            }
-            if (rect.Height < 0)
-            {
-                newRect.Y = rect.Y + rect.Height;
-                newRect.Height = Math.Abs(rect.Height);
-            }
-            //e.DrawRectangle(myPen, newRect);
+                if (rect.Width < 0)
+                {
+                    newRect.X = rect.X + rect.Width;
+                    newRect.Width = Math.Abs(rect.Width);
+                }
+                if (rect.Height < 0)
+                {
+                    newRect.Y = rect.Y + rect.Height;
+                    newRect.Height = Math.Abs(rect.Height);
+                }
+                //e.DrawRectangle(myPen, newRect);
 
-            Pen myPen = new Pen(penColor, penWidth);
-            if (notFullDraw)
-            {
-                myPen.DashPattern = penPattern;
-                e.DrawRectangle(myPen, newRect);
-            }
-            else
-            {
-                e.DrawRectangle(myPen, newRect);
-                e.FillRectangle(new SolidBrush(brushColor), newRect);
+                if (notFullDraw)
+                {
+                    myPen.DashPattern = penPattern;
+                    e.DrawRectangle(myPen, newRect);
+                }
+                else
+                {
+                    e.DrawRectangle(myPen, newRect);
+                    e.FillRectangle(new SolidBrush(brushColor), newRect);
+                }
             }
         }
         

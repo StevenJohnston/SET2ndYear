@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+    Name: Steven Johnston
+    File: Line.cs
+    Assignment: SET Paint (#2)
+    Date: 10/8/2015
+    Description: Line Shape. Data members needed to create a line, And methods to create and draw
+*/
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -21,19 +28,21 @@ namespace SETPaint
         public override void drawShape(Graphics e)
         {
             base.drawShape(e);
-
-            if (notFullDraw)
+            using (Pen myPen = new Pen(penColor, penWidth))
             {
-                //e.DrawLine(myPen, new Point(rect.X, rect.Y), new Point(rect.Width, rect.Height));
-                Pen myPen = new Pen(penColor, penWidth);
-                myPen.DashPattern = penPattern;
-                e.DrawLine(myPen, new Point(rect.X, rect.Y), new Point(rect.Width, rect.Height));
-            }
-            else
-            {
-                Pen myPen = new Pen(penColor,penWidth);
-                myPen.DashPattern = new float[] { 1f };
-                e.DrawLine(myPen, new Point(rect.X, rect.Y), new Point(rect.Width, rect.Height));
+                if (notFullDraw)
+                {
+                    //e.DrawLine(myPen, new Point(rect.X, rect.Y), new Point(rect.Width, rect.Height));
+                    //Pen myPen = new Pen(penColor, penWidth);
+                    myPen.DashPattern = penPattern;
+                    e.DrawLine(myPen, new Point(rect.X, rect.Y), new Point(rect.Width, rect.Height));
+                }
+                else
+                {
+                    //Pen myPen = new Pen(penColor, penWidth);
+                    myPen.DashPattern = new float[] { 1f };
+                    e.DrawLine(myPen, new Point(rect.X, rect.Y), new Point(rect.Width, rect.Height));
+                }
             }
         }
 

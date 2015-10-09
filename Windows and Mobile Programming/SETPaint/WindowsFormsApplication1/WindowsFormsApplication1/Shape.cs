@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+    Name: Steven Johnston
+    File: Shape.cs
+    Assignment: SET Paint (#2)
+    Date: 10/8/2015
+    Description: Shape class to be used as a parent class to all shapes
+*/
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;

@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+    Name: Steven Johnston
+    File: frmPaint.cs
+    Assignment: SET Paint (#2)
+    Date: 10/8/2015
+    Description: Main form that holds all controls.
+*/
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,6 +18,7 @@ using System.Windows.Forms;
 
 namespace SETPaint
 {
+    //Enum for referencing tools
     enum Tool: int{ line, rect, elli };
     public partial class frmPaint : Form
     {
@@ -26,20 +34,18 @@ namespace SETPaint
                 return cp;
             }
         }
-        int selectedTool = 0;
-        Type[] shapeTypes;
-        PictureBox[] tools;
-        Color cLine = Color.Wheat;
-        Color cFill = Color.Wheat;
-        Point mouseDown;
-        Point mouseUp;
-        Graphics g;
-        List<Shape> drawObjects = new List<Shape>();
-        Shape newShape = new Shape(new Color(),0f);
-        float lineWidth = 5f;
-        bool objectCreated = false;
-        bool mouseIsDown = false;
 
+        Tool selectedTool = Tool.line; //Selected drawing tool
+        Type[] shapeTypes; // Holds object types: Line, Rect , and Shape
+        PictureBox[] tools; // Hold picture boxs for line, rect, and ellip
+        Color cLine = Color.Black;//Defualt line color
+        Color cFill = Color.Black; //defualt fill color
+        Point mouseDown; //Point where mouse was first down (onMouseDown)
+        Point mouseUp; //Point where mouse was up down (onMouseUp)
+        List<Shape> drawObjects = new List<Shape>();// All of the objects (Shapes) to draw
+        Shape newShape = new Shape(new Color(),0f);// Shape that is rubber banding 
+        float lineWidth = 5f;//default line width
+        bool mouseIsDown = false;
         public frmPaint()
         {
             InitializeComponent();
@@ -50,28 +56,29 @@ namespace SETPaint
             changeTool();
             txtThickness.Text = Convert.ToString(lineWidth);
         }
-
-        private void pctLine_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Select tool according to picture box clicked
+        /// </summary>
+        /// <param name="sender">IN this case the picture box that is selected</param>
+        /// <param name="e"></param>
+        private void toolSelect(object sender, EventArgs e)
         {
-            selectedTool = (int)Tool.line;
-            changeTool();
+            var pictureBox = (PictureBox) sender;
+            for (int i = 0; i < tools.Length; i++)
+            {    
+                if ( pictureBox == tools[i])
+                {
+                    selectedTool = (Tool)i;
+                    pctSelectedTool.Image = pictureBox.Image;
+                    changeTool();
+                }
+            }
         }
-
-        private void pctRect_Click(object sender, EventArgs e)
-        {
-            selectedTool = (int)Tool.rect;
-            changeTool();
-        }
-
-        private void pctEllip_Click(object sender, EventArgs e)
-        {
-            selectedTool = (int)Tool.elli;
-            changeTool();
-        }
-        
+        /// <summary>
+        /// show fill color box if line isnt selected
+        /// </summary>
         public void changeTool()
         {
-            pctSelectedTool.Image = tools[selectedTool].Image;
             if (selectedTool == (int)Tool.line)
             {
                 pnlShape.Visible = false;
@@ -81,7 +88,10 @@ namespace SETPaint
                 pnlShape.Visible = true;
             }
         }
-
+        /// <summary>
+        /// Gets user inputed color using color dialog
+        /// </summary>
+        /// <param name="colour">reference to the Color struct to change</param>
         public void getColor(ref Color colour)
         {
             ColorDialog cDialog = new ColorDialog();
@@ -93,32 +103,49 @@ namespace SETPaint
                 colour = cDialog.Color;
             }
         }
-
+        /// <summary>
+        /// Line color has been selected, change line color
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ptcLineColour_Click(object sender, EventArgs e)
         {
             getColor(ref cLine);
             pctLineColour.BackColor = cLine;
         }
-
+        /// <summary>
+        /// Fill color has been selected, change fill color
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void pctFillColour_Click(object sender, EventArgs e)
         {
             getColor(ref cFill);
             pctFillColour.BackColor = cFill;
         }
-
+        /// <summary>
+        /// Main Panel for painting. Draws all shapes including the rubberbanding shape
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void pnlPane_Paint(object sender, PaintEventArgs e)
         {
-            g = e.Graphics;
+            Graphics g = e.Graphics;
             foreach (var drawObject in drawObjects)
             {
                 drawObject.drawShape(g);
             }
-            if (objectCreated)
+            if (mouseIsDown)
             {
                 newShape.drawShape(g);
             }
         }
-
+        
+        /// <summary>
+        /// Update the rubber banding shape
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void pnlPane_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left && newShape != null)
@@ -128,26 +155,38 @@ namespace SETPaint
                 pnlPane.Invalidate();
             }
         }
-
+        /// <summary>
+        /// Handles mouse down on main panel. Creates rubbebanding shape
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void pnlPane_MouseDown(object sender, MouseEventArgs e)
         {
+            pnlPane.Focus();
             mouseIsDown = true;
             mouseDown = e.Location;
-            if (selectedTool == 0)
+            if (selectedTool == Tool.line)//Line takes different parameters
             {
-                newShape = (Shape)Activator.CreateInstance(shapeTypes[selectedTool], cLine, lineWidth);
+                //Uses shapeTypes to get the shape type of selected tool
+                newShape = (Shape)Activator.CreateInstance(shapeTypes[(int)selectedTool], cLine, lineWidth);
             }
             else
             {
-                newShape = (Shape)Activator.CreateInstance(shapeTypes[selectedTool], cLine,cFill, lineWidth);
+                //Uses shapeTypes to get the shape type of selected tool
+                newShape = (Shape)Activator.CreateInstance(shapeTypes[(int)selectedTool], cLine,cFill, lineWidth);
             }
             newShape.notFullDraw = true;
             newShape.startDraw(e);
-            objectCreated = true;
         }
-
+        /// <summary>
+        /// On main panel mouse up. Add rubberbanding shape to finished shapes list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void pnlPane_MouseUp(object sender, MouseEventArgs e)
         {
+            //When clicking on a dialog or some sort, mouseUp would sometimes get triggered 
+            //with out mouseDown being called
             if (mouseIsDown)
             {
                 lblMouse.Text = "";
@@ -156,11 +195,14 @@ namespace SETPaint
                 newShape.midDraw(e);
                 newShape.notFullDraw = false;
                 drawObjects.Add(newShape);
-                objectCreated = false;
                 pnlPane.Invalidate();
             }
         }
-
+        /// <summary>
+        /// update tickness of line when changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtThickness_TextChanged(object sender, EventArgs e)
         {
             try
@@ -168,24 +210,19 @@ namespace SETPaint
                 lineWidth = Convert.ToInt16(txtThickness.Text);
             } catch (Exception ex)
             {
-            }
-        }
 
-        private void mnuMain_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            
+            }
         }
 
         private void btnClose_Click(object sender, EventArgs e)
         {
             Close();
         }
-
-        private void frmPaint_Load(object sender, EventArgs e)
-        {
-
-        }
-
+        /// <summary>
+        /// If left mouse is down then move the form with the cursor. Simulates title bar.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void frmPaint_MouseMove(object sender, MouseEventArgs e)
         {
             if(e.Button == MouseButtons.Left)
@@ -194,29 +231,41 @@ namespace SETPaint
                 this.Location = newLocation;
             }
         }
-
+        /// <summary>
+        /// Get postion of mouse when down. so that forms postion can be adjusted correctly
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void frmPaint_MouseDown(object sender, MouseEventArgs e)
         {
             mouseDown = e.Location;
         }
-
+        //Check for Ctrl+Z to remove last shape added
         private void frmPaint_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Z && e.Modifiers == Keys.Control && drawObjects.Count > 0 && !mouseIsDown)
             {
                 drawObjects.RemoveAt(drawObjects.Count - 1);
                 newShape = new Shape();
-                objectCreated = false;
+                mouseIsDown = false;
                 pnlPane.Invalidate();
             }
         }
-
+        /// <summary>
+        /// Close program when exit menu item is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tsmiExit_Click(object sender, EventArgs e)
         {
             
             Close();
         }
-
+        /// <summary>
+        /// Open file to load up saved drawings. deserializes file to drawObjects
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tsmiOpen_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
@@ -225,19 +274,23 @@ namespace SETPaint
             openFile.Multiselect = true;
             if (openFile.ShowDialog() == DialogResult.OK)
             {
-                drawObjects.Clear();
+                drawObjects.Clear();//Remove all current shapes
                 Stream fileIn = openFile.OpenFile();
                 using (fileIn)
                 {
-                    var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                    var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();//binary formatter 
 
-                    drawObjects = (List<Shape>)bformatter.Deserialize(fileIn);
+                    drawObjects = (List<Shape>)bformatter.Deserialize(fileIn);//Create all shapes
                 }
                 pnlPane.Invalidate();
             }
-            lblTitle.Text = "SET Paint - " + openFile.FileName.Substring(openFile.FileName.LastIndexOf(@"\")+1);
+            lblTitle.Text = "SET Paint - " + openFile.FileName.Substring(openFile.FileName.LastIndexOf(@"\")+1);//Gets string after last '\' in path
         }
-
+        /// <summary>
+        /// Save drawObjects list to file using binary formatter.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tsmiSave_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFile = new SaveFileDialog();
@@ -248,16 +301,19 @@ namespace SETPaint
                 Stream fileOut = saveFile.OpenFile();
                 using (fileOut)
                 {
-                    var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-
-                    bformatter.Serialize(fileOut, drawObjects);
+                    var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();//binary 
+                    bformatter.Serialize(fileOut, drawObjects);//serialize drawObject to fileOut stream
                 }
                 pnlPane.Invalidate();
             }
 
-            lblTitle.Text = "SET Paint - " + saveFile.FileName.Substring(saveFile.FileName.LastIndexOf(@"\") + 1);
+            lblTitle.Text = "SET Paint - " + saveFile.FileName.Substring(saveFile.FileName.LastIndexOf(@"\") + 1);//Gets string after last '\' in path
         }
-
+        /// <summary>
+        /// Remove all shapes if user agrees.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tsmiNew_Click(object sender, EventArgs e)
         {
             DialogResult dialogResult = MessageBox.Show("New document will erase current", "New Document", MessageBoxButtons.YesNo);
@@ -267,11 +323,14 @@ namespace SETPaint
                 pnlPane.Invalidate();
             }
         }
-
+        /// <summary>
+        /// Opens about box
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tsmiAbout_Click(object sender, EventArgs e)
         {
-            AboutBox newBox = new AboutBox();
-            newBox.ShowDialog();
+            new AboutBox().ShowDialog();//Well, thats cool
         }
     }
 }
