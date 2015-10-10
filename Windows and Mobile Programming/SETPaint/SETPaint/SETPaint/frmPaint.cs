@@ -270,7 +270,6 @@ namespace SETPaint
         /// <param name="e"></param>
         private void tsmiExit_Click(object sender, EventArgs e)
         {
-            
             Close();
         }
         /// <summary>
@@ -286,18 +285,22 @@ namespace SETPaint
             openFile.Multiselect = true;
             if (openFile.ShowDialog() == DialogResult.OK)
             {
-                drawObjects.Clear();//Remove all current shapes
-                Stream fileIn = openFile.OpenFile();
-                using (fileIn)
+                DialogResult dialogResult = MessageBox.Show("Opening document will close current without saving \nAre you sure you want to do this?", "Open Document", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
                 {
-                    var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();//binary formatter 
+                    drawObjects.Clear();//Remove all current shapes
+                    Stream fileIn = openFile.OpenFile();
+                    using (fileIn)
+                    {
+                        var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();//binary formatter 
 
-                    drawObjects = (List<Shape>)bformatter.Deserialize(fileIn);//Create all shapes
+                        drawObjects = (List<Shape>)bformatter.Deserialize(fileIn);//Create all shapes
+                    }
+                    pnlPane.Invalidate();
                 }
-                pnlPane.Invalidate();
+                lblTitle.Text = "SET Paint - " + openFile.FileName.Substring(openFile.FileName.LastIndexOf(@"\") + 1);//Gets string after last '\' in path
+                this.Text = lblTitle.Text; //Change name in task bar
             }
-            lblTitle.Text = "SET Paint - " + openFile.FileName.Substring(openFile.FileName.LastIndexOf(@"\")+1);//Gets string after last '\' in path
-            this.Text = lblTitle.Text; //Change name in task bar
         }
         /// <summary>
         /// Save drawObjects list to file using binary formatter.
@@ -330,11 +333,16 @@ namespace SETPaint
         /// <param name="e"></param>
         private void tsmiNew_Click(object sender, EventArgs e)
         {
-            DialogResult dialogResult = MessageBox.Show("New document will erase current", "New Document", MessageBoxButtons.YesNo);
-            if (dialogResult == DialogResult.Yes)
+            if (drawObjects.Count > 0)
             {
-                drawObjects.Clear();
-                pnlPane.Invalidate();
+                DialogResult dialogResult = MessageBox.Show("Opening new document will close current without saving \nAre you sure you want to do this?", "New Document", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    drawObjects.Clear();
+                    pnlPane.Invalidate();
+                    lblTitle.Text = "SET Paint - New Document";
+                    this.Text = lblTitle.Text;
+                }
             }
         }
         /// <summary>
@@ -345,6 +353,35 @@ namespace SETPaint
         private void tsmiAbout_Click(object sender, EventArgs e)
         {
             new AboutBox().ShowDialog();//Well, thats cool
+        }
+        /// <summary>
+        /// Minimizes the form
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnMinimize_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+        }
+        /// <summary>
+        /// When mouse enters a tool change the colour
+        /// </summary>
+        /// <param name="sender">Picture box that is hoverd</param>
+        /// <param name="e"></param>
+        private void pctTool_MouseEnter(object sender, EventArgs e)
+        {
+            PictureBox myPic = (PictureBox)sender;
+            myPic.BackColor = Color.DarkGray;
+        }
+        /// <summary>
+        /// When mouse leaves a tool change the colour
+        /// </summary>
+        /// <param name="sender">Picture box that need to be "uncoloured"</param>
+        /// <param name="e"></param>
+        private void pctTool_MouseLeave(object sender, EventArgs e)
+        {
+            PictureBox myPic = (PictureBox)sender;
+            myPic.BackColor = Color.FromName("Control Dark Dark");
         }
     }
 }

@@ -56,6 +56,7 @@
             this.lblTitle = new System.Windows.Forms.Label();
             this.pnlStatus = new System.Windows.Forms.Panel();
             this.lblMouse = new System.Windows.Forms.Label();
+            this.btnMinimize = new System.Windows.Forms.Button();
             this.pnlPane = new SETPaint.Pane();
             this.pnlToolBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pctEllip)).BeginInit();
@@ -93,6 +94,8 @@
             this.pctEllip.TabIndex = 2;
             this.pctEllip.TabStop = false;
             this.pctEllip.Click += new System.EventHandler(this.toolSelect);
+            this.pctEllip.MouseEnter += new System.EventHandler(this.pctTool_MouseEnter);
+            this.pctEllip.MouseLeave += new System.EventHandler(this.pctTool_MouseLeave);
             // 
             // pctRect
             // 
@@ -103,6 +106,8 @@
             this.pctRect.TabIndex = 1;
             this.pctRect.TabStop = false;
             this.pctRect.Click += new System.EventHandler(this.toolSelect);
+            this.pctRect.MouseEnter += new System.EventHandler(this.pctTool_MouseEnter);
+            this.pctRect.MouseLeave += new System.EventHandler(this.pctTool_MouseLeave);
             // 
             // pctLine
             // 
@@ -113,6 +118,8 @@
             this.pctLine.TabIndex = 0;
             this.pctLine.TabStop = false;
             this.pctLine.Click += new System.EventHandler(this.toolSelect);
+            this.pctLine.MouseEnter += new System.EventHandler(this.pctTool_MouseEnter);
+            this.pctLine.MouseLeave += new System.EventHandler(this.pctTool_MouseLeave);
             // 
             // pnlOptions
             // 
@@ -211,6 +218,7 @@
             this.btnClose.BackColor = System.Drawing.Color.Gray;
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClose.Location = new System.Drawing.Point(974, 0);
+            this.btnClose.Margin = new System.Windows.Forms.Padding(0);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(30, 24);
             this.btnClose.TabIndex = 4;
@@ -339,6 +347,19 @@
             this.lblMouse.Size = new System.Drawing.Size(0, 13);
             this.lblMouse.TabIndex = 0;
             // 
+            // btnMinimize
+            // 
+            this.btnMinimize.BackColor = System.Drawing.Color.Gray;
+            this.btnMinimize.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMinimize.Location = new System.Drawing.Point(944, 0);
+            this.btnMinimize.Margin = new System.Windows.Forms.Padding(0);
+            this.btnMinimize.Name = "btnMinimize";
+            this.btnMinimize.Size = new System.Drawing.Size(30, 24);
+            this.btnMinimize.TabIndex = 10;
+            this.btnMinimize.Text = "__";
+            this.btnMinimize.UseVisualStyleBackColor = false;
+            this.btnMinimize.Click += new System.EventHandler(this.btnMinimize_Click);
+            // 
             // pnlPane
             // 
             this.pnlPane.BackColor = System.Drawing.Color.White;
@@ -359,6 +380,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.ClientSize = new System.Drawing.Size(1008, 759);
+            this.Controls.Add(this.btnMinimize);
             this.Controls.Add(this.pnlStatus);
             this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.pnlMenuBar);
@@ -429,6 +451,7 @@
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.Panel pnlStatus;
         private System.Windows.Forms.Label lblMouse;
+        private System.Windows.Forms.Button btnMinimize;
     }
 }
 

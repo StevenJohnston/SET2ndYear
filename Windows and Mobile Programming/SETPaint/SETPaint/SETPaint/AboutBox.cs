@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+    Name: Steven Johnston, Matthew Warren
+    File: AboutBox.cs
+    Assignment: SET Paint (#2)
+    Date: 10/8/2015
+    Description: Form for about box 
+*/
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;

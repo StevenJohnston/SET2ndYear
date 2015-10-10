@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SETPaint")]
-[assembly: AssemblyDescription("Software Engineering Paint program")]
+[assembly: AssemblyDescription("Software Engineering Paint program. Draw lines,squares, and ellipsis to panel with the ability to save and open projects created in our software.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Steven Johnston")]
+[assembly: AssemblyCompany("Steven Johnston Matthew Warren")]
 [assembly: AssemblyProduct("SETPaint")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
