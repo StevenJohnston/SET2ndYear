@@ -1,5 +1,5 @@
 ﻿/*
-    Name: Steven Johnston
+    Name: Steven Johnston, Matthew Warren
     File: Shape.cs
     Assignment: SET Paint (#2)
     Date: 10/8/2015

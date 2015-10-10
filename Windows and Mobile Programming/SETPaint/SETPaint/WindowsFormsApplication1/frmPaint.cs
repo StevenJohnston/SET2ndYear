@@ -1,5 +1,5 @@
 ﻿/*
-    Name: Steven Johnston
+    Name: Steven Johnston, Matthew Warren
     File: frmPaint.cs
     Assignment: SET Paint (#2)
     Date: 10/8/2015
@@ -55,6 +55,7 @@ namespace SETPaint
             shapeTypes = new Type[3]{typeof(Line), typeof(Rect), typeof(Ellip) };
             changeTool();
             txtThickness.Text = Convert.ToString(lineWidth);
+            pctSelectedTool.Image = pctLine.Image;
         }
         /// <summary>
         /// Select tool according to picture box clicked
@@ -205,15 +206,26 @@ namespace SETPaint
         /// <param name="e"></param>
         private void txtThickness_TextChanged(object sender, EventArgs e)
         {
+            //Check if line thickness is num
             try
             {
                 lineWidth = Convert.ToInt16(txtThickness.Text);
-            } catch (Exception ex)
+            }
+            catch (OverflowException)
             {
-
+                Console.WriteLine("{0} is outside the range of the Int32 type.", txtThickness.Text);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("The {0} value '{1}' is not in a recognizable format.",
+                                  txtThickness.Text.GetType().Name, txtThickness.Text);
             }
         }
-
+        /// <summary>
+        /// Closes program when X is clicked in corner
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnClose_Click(object sender, EventArgs e)
         {
             Close();
@@ -285,6 +297,7 @@ namespace SETPaint
                 pnlPane.Invalidate();
             }
             lblTitle.Text = "SET Paint - " + openFile.FileName.Substring(openFile.FileName.LastIndexOf(@"\")+1);//Gets string after last '\' in path
+            this.Text = lblTitle.Text; //Change name in task bar
         }
         /// <summary>
         /// Save drawObjects list to file using binary formatter.
@@ -306,8 +319,9 @@ namespace SETPaint
                 }
                 pnlPane.Invalidate();
             }
-
+            
             lblTitle.Text = "SET Paint - " + saveFile.FileName.Substring(saveFile.FileName.LastIndexOf(@"\") + 1);//Gets string after last '\' in path
+            this.Text = lblTitle.Text; //Change name in task bar
         }
         /// <summary>
         /// Remove all shapes if user agrees.
