@@ -14,9 +14,22 @@ namespace Mystify
     public partial class frmMystify : Form
     {
         List<MystLine> mystLines = new List<MystLine>();
+        List<MyTimer> timers = new List<MyTimer>();
+        MyTimer drawTimer;
         public frmMystify()
         {
             InitializeComponent();
+            drawTimer = new MyTimer(10,draw,this);
+            
+        }
+        public void draw(object e)
+        {
+            //((Form)e).Invalidate();
+            Graphics temp = ((Form)e).CreateGraphics();
+            foreach (var mystline in mystLines)
+            {
+                mystline.draw(temp);
+            }
         }
 
         private void frmMystify_Load(object sender, EventArgs e)
@@ -25,12 +38,15 @@ namespace Mystify
         }
 
         private void frmMystify_MouseDown(object sender, MouseEventArgs e)
-        {
+        { 
             MystLine newMyst = new MystLine(e.Location);
+            MyTimer newTimer = new MyTimer(50, newMyst.update, this);
             mystLines.Add(newMyst);
-            TimerCallback TimerDelegate = new TimerCallback(newMyst.update);
+        }
 
-            System.Threading.Timer TimerItem = new System.Threading.Timer(TimerDelegate, this.CreateGraphics(), 2000, 2000);
+        private void frmMystify_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

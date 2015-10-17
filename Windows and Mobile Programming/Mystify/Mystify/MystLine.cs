@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Mystify
 {
@@ -13,7 +14,8 @@ namespace Mystify
         Random rnd = new Random();
         Point p1Velocity;
         Point p2Velocity;
-        List<Line> lines = new List<Line>();
+        public List<Line> lines = new List<Line>();
+        Graphics e;
         public MystLine()
         {
         
@@ -26,22 +28,29 @@ namespace Mystify
         }
         public void update(object e)
         {
-            frontLine.P1 = new Point(frontLine.P1.X + p1Velocity.X, frontLine.P1.Y + p1Velocity.Y);
-            frontLine.P2 = new Point(frontLine.P2.X + p2Velocity.X, frontLine.P2.Y + p2Velocity.Y);
-            lines.Add(frontLine);
-            if (lines.Count > 10)
+            lock(_m)
             {
-                lines.RemoveAt(0);
+                frontLine = new Line(new Point(frontLine.P1.X + p1Velocity.X, frontLine.P1.Y + p1Velocity.Y), new Point(frontLine.P2.X + p2Velocity.X, frontLine.P2.Y + p2Velocity.Y));
+                lines.Add(frontLine);
+                if (lines.Count > 10)
+                {
+                    ((Form)e).CreateGraphics().DrawLine(new Pen(Color.White),lines[0].P1,lines[0].P2);
+                    lines.RemoveAt(0);
+                }
             }
-            draw((Graphics)e);
-
+            //((Form)e).Invalidate();
+            //draw(((Form)e).CreateGraphics());
         }
         public void draw(Graphics e)
-        { 
-            foreach (var line in lines)
+        {
+            lock(_m)
             {
-                line.draw(e);
-            } 
+                foreach (var line in lines)
+                {
+                    line.draw(e);
+                }
+            }
         }
+        private readonly System.Threading.Mutex _m = new System.Threading.Mutex();
     }
 }

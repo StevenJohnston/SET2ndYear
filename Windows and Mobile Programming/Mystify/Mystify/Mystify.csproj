@@ -52,6 +52,7 @@
     </Compile>
     <Compile Include="Line.cs" />
     <Compile Include="MystLine.cs" />
+    <Compile Include="MyTimer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="frmMystify.resx">
