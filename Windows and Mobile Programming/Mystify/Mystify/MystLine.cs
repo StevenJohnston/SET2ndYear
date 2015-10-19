@@ -8,40 +8,53 @@ using System.Windows.Forms;
 
 namespace Mystify
 {
-    class MystLine
+    class MystLine : Shape
     {
         Line frontLine = new Line();
         Random rnd = new Random();
+        PointVelocity P1;
+        PointVelocity P2;
         Point p1Velocity;
         Point p2Velocity;
         public List<Line> lines = new List<Line>();
-        Graphics e;
+        SETPaint.Pane drawForm;
         public MystLine()
         {
         
         }
-        public MystLine(Point start)
+        public MystLine(SETPaint.Pane pane, Point start)
         {
             frontLine = new Line(start,start);
-            p1Velocity = new Point(rnd.Next(-10,10),rnd.Next(-10,10));
-            p2Velocity = new Point(rnd.Next(-10, 10), rnd.Next(-10, 10));
+            Usefull.randomVelocity(ref p1Velocity);
+            Usefull.randomVelocity(ref p2Velocity);
+            drawForm = pane;
+            c = Color.FromArgb(255, rnd.Next(255), rnd.Next(255), rnd.Next(255));
         }
         public void update(object e)
         {
             lock(_m)
             {
-                frontLine = new Line(new Point(frontLine.P1.X + p1Velocity.X, frontLine.P1.Y + p1Velocity.Y), new Point(frontLine.P2.X + p2Velocity.X, frontLine.P2.Y + p2Velocity.Y));
-                lines.Add(frontLine);
-                if (lines.Count > 10)
+                frontLine = new Line(new Point(frontLine.P1.X + p1Velocity.X, frontLine.P1.Y + p1Velocity.Y), new Point(frontLine.P2.X + p2Velocity.X, frontLine.P2.Y + p2Velocity.Y),c);
+                p1Velocity = Usefull.keepPointInControl(frontLine.P1, p1Velocity,drawForm);
+                p2Velocity = Usefull.keepPointInControl(frontLine.P2, p2Velocity, drawForm);
+                for (; lines.Count > Usefull.trailLength;)
                 {
-                    ((Form)e).CreateGraphics().DrawLine(new Pen(Color.White),lines[0].P1,lines[0].P2);
                     lines.RemoveAt(0);
                 }
+                foreach (var line in lines)
+                {
+                    if (line.C.A - (255 / Usefull.trailLength) >= 0)
+                    {
+                        line.C = Color.FromArgb(line.C.A - (255 / Usefull.trailLength), line.C);
+                    }
+                    else {
+                        line.C = Color.White;
+                    }
+                }
+                lines.Add(frontLine);
             }
-            //((Form)e).Invalidate();
-            //draw(((Form)e).CreateGraphics());
         }
-        public void draw(Graphics e)
+        public override void draw(Graphics e)
         {
             lock(_m)
             {

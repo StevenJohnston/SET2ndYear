@@ -53,8 +53,15 @@
     <Compile Include="Line.cs" />
     <Compile Include="MystLine.cs" />
     <Compile Include="MyTimer.cs" />
+    <Compile Include="Pane.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PointVelocity.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shape.cs" />
+    <Compile Include="Triangle.cs" />
+    <Compile Include="Usefull.cs" />
     <EmbeddedResource Include="frmMystify.resx">
       <DependentUpon>frmMystify.cs</DependentUpon>
     </EmbeddedResource>

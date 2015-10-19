@@ -9,31 +9,24 @@ namespace Mystify
 {
     class MyTimer
     {
-        //int delay;
         public delegate void func(object e);
-        public FuncTimer funcTimer;
-        public MyTimer(int delay, func newFunc, object e)
-        {
-            funcTimer = new FuncTimer(delay,newFunc,e);
-            funcTimer.start();
-        }
-    }
-    class FuncTimer
-    {
-        //public delegate bool func(object e);
         public int delayAmount;
         public Thread thread;
-        public Mystify.MyTimer.func myFunc;
+        public func myFunc;
         public object sender;
+        public bool paused = false;
+        bool killThread = false;
+        ManualResetEvent mrse = new ManualResetEvent(false);
+        public MyTimer(int delay, func newFunc, object e)
+        {
+            delayAmount = delay;
+            myFunc = newFunc;
+            sender = e;
+            start();
+        }
         public void delay()
         {
             Thread.Sleep(delayAmount);
-        }
-        public FuncTimer(int delay,MyTimer.func newfunc,object e)
-        {
-            delayAmount = delay;
-            myFunc = newfunc;
-            sender = e;
         }
         public void start()
         {
@@ -42,11 +35,29 @@ namespace Mystify
         }
         public void loop()
         {
-            for (;;)
+            for (; !killThread;)
             {
+                if (paused)
+                {
+                    mrse.WaitOne();
+                }
                 myFunc(sender);
                 delay();
             }
+        }
+        public void pause()
+        {
+            paused = true;
+            mrse.Reset();
+        }
+        public void resume()
+        {
+            paused = false;
+            mrse.Set();
+        }
+        public void stop()
+        {
+            killThread = true;
         }
     }
 }

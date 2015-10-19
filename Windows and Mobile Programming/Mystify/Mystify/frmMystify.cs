@@ -13,23 +13,24 @@ namespace Mystify
 {
     public partial class frmMystify : Form
     {
-        List<MystLine> mystLines = new List<MystLine>();
+        private readonly System.Threading.Mutex _m = new System.Threading.Mutex();
+        List<Shape> mystShapes = new List<Shape>();
         List<MyTimer> timers = new List<MyTimer>();
+        Bitmap img;
+        Graphics g;
         MyTimer drawTimer;
+        bool paused = false;
         public frmMystify()
         {
             InitializeComponent();
-            drawTimer = new MyTimer(10,draw,this);
-            
+            drawTimer = new MyTimer(1000/144, draw, new object());
+            //timers.Add(drawTimer);
+            img = new Bitmap(pnlPane.Width,pnlPane.Height);
+            g = Graphics.FromImage(img);
         }
         public void draw(object e)
         {
-            //((Form)e).Invalidate();
-            Graphics temp = ((Form)e).CreateGraphics();
-            foreach (var mystline in mystLines)
-            {
-                mystline.draw(temp);
-            }
+            pnlPane.Invalidate();
         }
 
         private void frmMystify_Load(object sender, EventArgs e)
@@ -37,16 +38,76 @@ namespace Mystify
 
         }
 
-        private void frmMystify_MouseDown(object sender, MouseEventArgs e)
-        { 
-            MystLine newMyst = new MystLine(e.Location);
-            MyTimer newTimer = new MyTimer(50, newMyst.update, this);
-            mystLines.Add(newMyst);
+        private void pane_mouse_down(object sender, MouseEventArgs e)
+        {
+            if (!paused)
+            {
+                MystLine newMyst = new MystLine(pnlPane, e.Location);
+                MyTimer newTimer = new MyTimer(1000 / 144, newMyst.update, this);
+                timers.Add(newTimer);
+                lock (_m)
+                {
+                    mystShapes.Add(newMyst);
+                }
+            }
+        }
+        
+
+        private void pnlPane_Paint(object sender, PaintEventArgs e)
+        {
+            lock (_m)
+            {
+                g.Clear(Color.White);
+                foreach (var myst in mystShapes)
+                {
+                    myst.draw(g);
+                }
+            }
+            pnlPane.BackgroundImage = img;
         }
 
-        private void frmMystify_Paint(object sender, PaintEventArgs e)
+        private void btnPauseResume_Click(object sender, EventArgs e)
+        {
+            paused = !paused;
+            if (paused)
+            {
+                btnPauseResume.Text = "Resume";
+                foreach (var time in timers)
+                {
+                    time.pause();
+                }
+            }
+            else
+            {
+                btnPauseResume.Text = "Pause";
+                foreach (var time in timers)
+                {
+                    time.resume();
+                }
+            }
+        }
+
+        private void btnShutDown_Click(object sender, EventArgs e)
+        {
+            foreach (var timer in timers)
+            {
+                timer.stop();
+            }
+            timers.Clear();
+            mystShapes.Clear();
+        }
+
+        private void btnDrawTriangle_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void trcTrail_Scroll(object sender, EventArgs e)
+        {
+            foreach (Shape mystShape in mystShapes)
+            {
+                Usefull.trailLength = trcTrail.Value;
+            }
         }
     }
 }
