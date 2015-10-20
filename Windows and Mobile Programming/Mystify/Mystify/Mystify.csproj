@@ -51,6 +51,7 @@
       <DependentUpon>frmMystify.cs</DependentUpon>
     </Compile>
     <Compile Include="Line.cs" />
+    <Compile Include="MultiLine.cs" />
     <Compile Include="MystLine.cs" />
     <Compile Include="MyTimer.cs" />
     <Compile Include="Pane.cs">

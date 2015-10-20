@@ -26,7 +26,7 @@ namespace Mystify
         }
         public void delay()
         {
-            Thread.Sleep(delayAmount);
+            Thread.Sleep(Usefull.speed);
         }
         public void start()
         {

@@ -23,10 +23,12 @@ namespace Mystify
         public frmMystify()
         {
             InitializeComponent();
+            Usefull.speed = 1000 / trcSpeed.Value;
             drawTimer = new MyTimer(1000/144, draw, new object());
             //timers.Add(drawTimer);
             img = new Bitmap(pnlPane.Width,pnlPane.Height);
             g = Graphics.FromImage(img);
+            Usefull.drawPanel = pnlPane;
         }
         public void draw(object e)
         {
@@ -57,12 +59,13 @@ namespace Mystify
         {
             lock (_m)
             {
-                g.Clear(Color.White);
+                g.Clear(Color.Black);
                 foreach (var myst in mystShapes)
                 {
                     myst.draw(g);
                 }
             }
+
             pnlPane.BackgroundImage = img;
         }
 
@@ -108,6 +111,11 @@ namespace Mystify
             {
                 Usefull.trailLength = trcTrail.Value;
             }
+        }
+
+        private void trcSpeed_Scroll(object sender, EventArgs e)
+        {
+            Usefull.speed = 1000/trcSpeed.Value;
         }
     }
 }

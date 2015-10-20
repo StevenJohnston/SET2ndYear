@@ -33,8 +33,11 @@
             this.btnDrawTriangle = new System.Windows.Forms.Button();
             this.trcTrail = new System.Windows.Forms.TrackBar();
             this.lblTrailSize = new System.Windows.Forms.Label();
+            this.lblSpeed = new System.Windows.Forms.Label();
+            this.trcSpeed = new System.Windows.Forms.TrackBar();
             this.pnlPane = new SETPaint.Pane();
             ((System.ComponentModel.ISupportInitialize)(this.trcTrail)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trcSpeed)).BeginInit();
             this.SuspendLayout();
             // 
             // btnPauseResume
@@ -87,6 +90,26 @@
             this.lblTrailSize.TabIndex = 5;
             this.lblTrailSize.Text = "Trail Size";
             // 
+            // lblSpeed
+            // 
+            this.lblSpeed.AutoSize = true;
+            this.lblSpeed.Location = new System.Drawing.Point(969, 226);
+            this.lblSpeed.Name = "lblSpeed";
+            this.lblSpeed.Size = new System.Drawing.Size(38, 13);
+            this.lblSpeed.TabIndex = 7;
+            this.lblSpeed.Text = "Speed";
+            // 
+            // trcSpeed
+            // 
+            this.trcSpeed.Location = new System.Drawing.Point(972, 242);
+            this.trcSpeed.Maximum = 144;
+            this.trcSpeed.Minimum = 10;
+            this.trcSpeed.Name = "trcSpeed";
+            this.trcSpeed.Size = new System.Drawing.Size(153, 45);
+            this.trcSpeed.TabIndex = 6;
+            this.trcSpeed.Value = 60;
+            this.trcSpeed.Scroll += new System.EventHandler(this.trcSpeed_Scroll);
+            // 
             // pnlPane
             // 
             this.pnlPane.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -104,6 +127,8 @@
             this.BackColor = System.Drawing.Color.White;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(1135, 568);
+            this.Controls.Add(this.lblSpeed);
+            this.Controls.Add(this.trcSpeed);
             this.Controls.Add(this.lblTrailSize);
             this.Controls.Add(this.trcTrail);
             this.Controls.Add(this.btnDrawTriangle);
@@ -115,6 +140,7 @@
             this.Load += new System.EventHandler(this.frmMystify_Load);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pane_mouse_down);
             ((System.ComponentModel.ISupportInitialize)(this.trcTrail)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trcSpeed)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -128,6 +154,8 @@
         private System.Windows.Forms.Button btnDrawTriangle;
         private System.Windows.Forms.TrackBar trcTrail;
         private System.Windows.Forms.Label lblTrailSize;
+        private System.Windows.Forms.Label lblSpeed;
+        private System.Windows.Forms.TrackBar trcSpeed;
     }
 }
 

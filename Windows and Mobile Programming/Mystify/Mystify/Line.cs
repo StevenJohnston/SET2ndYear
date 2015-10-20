@@ -9,15 +9,15 @@ namespace Mystify
 {
     class Line : Shape
     {
-        Point p1;
-        public Point P1
+        PointF p1;
+        public PointF P1
         {
             get { return p1; }
             set { p1 = value; }
         }
-        Point p2;
+        PointF p2;
 
-        public Point P2
+        public PointF P2
         {
             get { return p2; }
             set { p2 = value; }
@@ -42,12 +42,12 @@ namespace Mystify
         { 
             
         }
-        public Line(Point p1, Point p2)
+        public Line(PointF p1, PointF p2)
         {
             this.p1 = p1;
             this.p2 = p2;
         }
-        public Line(Point p1, Point p2,Color newC)
+        public Line(PointF p1, PointF p2,Color newC)
         {
             this.p1 = p1;
             this.p2 = p2;

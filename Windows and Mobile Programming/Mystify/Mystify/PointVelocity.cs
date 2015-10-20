@@ -16,5 +16,10 @@ namespace Mystify
             position = pos;
             direction = direc;
         }
+        public void move()
+        {
+            position.X += direction.X;
+            position.Y += direction.Y;
+        }
     }
 }
