@@ -1,0 +1,38 @@
+1. Display the customerId, ContactName, Country and City in that order from the Customers table
+SELECT customerId,ContactName, Country, City FROM Customers;
+
+2. display the countries tht are in the customers table in alphabetical order. Display each country name only once
+SELECT Distinct country FROM Customer;
+
+3. What are the CompanyName and City of all customers in Germany?
+SELECT companyName, City FROM Customer where contry = "germany"
+
+4. Desplay the Customer UId and COntactName for each product in the Products Table;
+SELECT `Customer Id`, contactName FROM Products
+
+5. How many products are  in the Products Table;
+ Select COUNT(*) from Products;
+ 
+6.Display the ProductId, ProductName and UnitPrice for each product in the Products table.
+SELECT ProductId, ProductName, UnitPrice FROM Products;
+
+7. Display the ProductName, UnitsInStock and unitPrice for all the products that cost most than $20 Make sjure that the list is in UnitPrice descending order 
+SELECT ProductName,UnitsInStock, unitPrice WHERE unitPrice > 20 DECS uintPrice
+
+8.How many products are discontinued discontinued product have -1 value
+SELECT Count(*) where unitPrice = -1
+
+9. Display the CategoryName and ProductName for each product
+SELECT CategoryName , ProductName from Product
+
+10. From the Employees table, combine the Title, FirstName and LastName to display a column called Salutation
+SELECT concat(Title, " " , FirstName , " " , LastName) from Employees
+
+11. Display a list of TerritoryDescriptions with their corresponding ReginDescriptions
+Select t.TerritoryDescription, r.ReginDescription from territories t Inner Join region r ON t.RegionId = r.RegionId
+
+12. For each order detail line, display the OrderId, CustomerId, ProductId and Quantity
+Select od.OrderId, o.CustomerID, od.ProductId, od.Quantity from `order details` od INNER JOIN orders o ON od.OrderId = o.OrderId
+
+13. For each order detail line, display the OrderId, CutomerId, ProductId amd Extended Prince. Extended price is the product of UnitPrice and Qunitity. Call the column Extended Price
+Select  
