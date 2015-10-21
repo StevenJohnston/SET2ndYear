@@ -1,38 +1,69 @@
-1. Display the customerId, ContactName, Country and City in that order from the Customers table
-SELECT customerId,ContactName, Country, City FROM Customers;
+1. Display the CustomerID, ContactName, Country and City (in that order) in the Customers table.
+SELECT CustomerID,ContactName, Country, City FROM Customers;
 
-2. display the countries tht are in the customers table in alphabetical order. Display each country name only once
-SELECT Distinct country FROM Customer;
+2. Display the countries that are in the Customers table in alphabetical order. Display each country name only once.
+SELECT Distinct Country FROM Customers;
 
 3. What are the CompanyName and City of all customers in Germany?
-SELECT companyName, City FROM Customer where contry = "germany"
+SELECT CompanyName, City FROM customers where country = "germany";
 
-4. Desplay the Customer UId and COntactName for each product in the Products Table;
-SELECT `Customer Id`, contactName FROM Products
+4. Display the CustomerID and ContactName for each customer that does not have a Fax number.
+SELECT CustomerID, ContactName FROM customers WHERE Fax IS NULL;
 
-5. How many products are  in the Products Table;
- Select COUNT(*) from Products;
+5. How many products are in the Products tables?
+Select COUNT(*) as "Record Count" from Products;
  
-6.Display the ProductId, ProductName and UnitPrice for each product in the Products table.
-SELECT ProductId, ProductName, UnitPrice FROM Products;
+6. Display the ProductID, ProductName and UnitPrice for each product in the Products table.
+SELECT ProductID, ProductName, UnitPrice FROM products;
 
-7. Display the ProductName, UnitsInStock and unitPrice for all the products that cost most than $20 Make sjure that the list is in UnitPrice descending order 
-SELECT ProductName,UnitsInStock, unitPrice WHERE unitPrice > 20 DECS uintPrice
+7. Display the ProductName, UnitsInStock and UnitPrice (in that order) for all the products that
+cost most than $20 (assuming the unit price is in dollars). Make sure that the list is in UnitPrice
+descending order (most expensive at the top of the list).
+SELECT ProductName,UnitsInStock, UnitPrice FROM products WHERE UnitPrice > 20 ORDER BY UnitPrice DESC;
 
-8.How many products are discontinued discontinued product have -1 value
-SELECT Count(*) where unitPrice = -1
+8.How many products are discontinued? (Discontinued products are indicated by a value of -1).
+SELECT Count(*) as "Discontinued Count" FROM products WHERE Discontinued = -1;
 
-9. Display the CategoryName and ProductName for each product
-SELECT CategoryName , ProductName from Product
+9. Display the CategoryName and ProductName (in that order) for each product
+SELECT CategoryName, ProductName FROM products p INNER JOIN categories c ON p.CategoryID = c.CategoryID;
 
-10. From the Employees table, combine the Title, FirstName and LastName to display a column called Salutation
-SELECT concat(Title, " " , FirstName , " " , LastName) from Employees
+10. From the Employees table, combine the Title, FirstName and LastName to display a column called Salutation.
+SELECT concat(Title, " " , FirstName , " " , LastName) as Salutation FROM employees;
 
-11. Display a list of TerritoryDescriptions with their corresponding ReginDescriptions
-Select t.TerritoryDescription, r.ReginDescription from territories t Inner Join region r ON t.RegionId = r.RegionId
+11. Display a list of TerritoryDescriptions with their corresponding RegionDescriptions.
+Select t.TerritoryDescription, r.RegionDescription from territories t Inner Join region r ON t.RegionId = r.RegionId;
 
-12. For each order detail line, display the OrderId, CustomerId, ProductId and Quantity
-Select od.OrderId, o.CustomerID, od.ProductId, od.Quantity from `order details` od INNER JOIN orders o ON od.OrderId = o.OrderId
+12. For each order detail line, display the OrderID, CustomerID, ProductID and Quantity.
+Select od.OrderId, o.CustomerID, od.ProductId, od.Quantity from `order details` od INNER JOIN orders o ON od.OrderId = o.OrderId;
 
-13. For each order detail line, display the OrderId, CutomerId, ProductId amd Extended Prince. Extended price is the product of UnitPrice and Qunitity. Call the column Extended Price
-Select  
+13. For each order detail line, display the OrderID, CustomerID, ProductID and Extended Price. (The
+extended price is the product of UnitPrice and Quantity. Make sure the column is called
+“Extended Price”.)
+Select od.OrderId, o.CustomerId, od.ProductId, (od.UnitPrice + od.Quantity) as 'Extended price' from `order details`od INNER JOIN orders o on od.OrderId = o.OrderId;
+
+14. For each order, display the OrderID, OrderDate, CompanyName (Customers) and Employee Name (combination of first name and last name from Employees).
+Select o.OrderId, o.OrderDate, c.CompanyName, (e.FirstName + " " + e.LastName) as "Employee Name" from orders o INNER JOIN employees e on o.EmployeeID = e.EmployeeID INNER JOIN customers c on c.CustomerID = o.CustomerID;
+
+15. Display the CustomerID and CustomerName of all Customers that have ever had an order.
+Select c.CustomerID, c.CompanyName from Customers c WHERE EXISTS(Select CustomerID from orders o where c.CustomerID = o.CustomerID);
+
+16. Display the CustomerID and CustomerName of all Customers that have never had an order.
+Select c.CustomerID, c.CompanyName from Customers c WHERE NOT EXISTS(Select CustomerID from orders o where c.CustomerID = o.CustomerID);
+
+17. Add a new region, called ‘Europe’, to the Region table
+INSERT INTO region (RegionID,RegionDescription) Select RegionID+1,"Europe" as RegionDescription FROM region ORDER BY RegionID DESC Limit 1;
+
+18. Remove the region called ‘Europe’ from the Region table.
+DELETE FROM region WHERE RegionDescription = "Europe";
+
+19. For the company called ‘Ernst Handel’, change the name of the contact person to Hans Schmidt.
+UPDATE customers set ContactName = "Hans Schmidt" where CompanyName = "Ernst Handel";
+ 
+20. Increase each UnitPrice in the Products table by $1 (assuming the unit price is in $’s).
+UPDATE products set UnitPrice = UnitPrice+1;
+
+21. Create a new category of products called “Discontinued”
+INSERT INTO categories (CategoryID,CategoryName) Select CategoryID+1,"Discontinued" as CategoryName FROM categories ORDER BY CategoryID DESC Limit 1;
+
+22. For each discontinued product, change its category to “Discontinued”.
+UPDATE products p, categories c SET p.Discontinued = c.CategoryID WHERE p.CategoryID = -1 AND p.CategoryID = c.CategoryID; 
