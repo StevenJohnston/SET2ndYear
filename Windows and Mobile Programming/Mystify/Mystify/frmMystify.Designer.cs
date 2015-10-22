@@ -35,14 +35,16 @@
             this.lblTrailSize = new System.Windows.Forms.Label();
             this.lblSpeed = new System.Windows.Forms.Label();
             this.trcSpeed = new System.Windows.Forms.TrackBar();
+            this.pnlTools = new System.Windows.Forms.Panel();
             this.pnlPane = new SETPaint.Pane();
             ((System.ComponentModel.ISupportInitialize)(this.trcTrail)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trcSpeed)).BeginInit();
+            this.pnlTools.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnPauseResume
             // 
-            this.btnPauseResume.Location = new System.Drawing.Point(969, 13);
+            this.btnPauseResume.Location = new System.Drawing.Point(-1, 0);
             this.btnPauseResume.Name = "btnPauseResume";
             this.btnPauseResume.Size = new System.Drawing.Size(154, 48);
             this.btnPauseResume.TabIndex = 1;
@@ -52,7 +54,7 @@
             // 
             // btnShutDown
             // 
-            this.btnShutDown.Location = new System.Drawing.Point(969, 67);
+            this.btnShutDown.Location = new System.Drawing.Point(-1, 54);
             this.btnShutDown.Name = "btnShutDown";
             this.btnShutDown.Size = new System.Drawing.Size(154, 48);
             this.btnShutDown.TabIndex = 2;
@@ -62,7 +64,7 @@
             // 
             // btnDrawTriangle
             // 
-            this.btnDrawTriangle.Location = new System.Drawing.Point(969, 121);
+            this.btnDrawTriangle.Location = new System.Drawing.Point(-1, 108);
             this.btnDrawTriangle.Name = "btnDrawTriangle";
             this.btnDrawTriangle.Size = new System.Drawing.Size(154, 48);
             this.btnDrawTriangle.TabIndex = 3;
@@ -72,7 +74,7 @@
             // 
             // trcTrail
             // 
-            this.trcTrail.Location = new System.Drawing.Point(972, 191);
+            this.trcTrail.Location = new System.Drawing.Point(2, 178);
             this.trcTrail.Maximum = 255;
             this.trcTrail.Minimum = 1;
             this.trcTrail.Name = "trcTrail";
@@ -84,7 +86,7 @@
             // lblTrailSize
             // 
             this.lblTrailSize.AutoSize = true;
-            this.lblTrailSize.Location = new System.Drawing.Point(969, 175);
+            this.lblTrailSize.Location = new System.Drawing.Point(-1, 162);
             this.lblTrailSize.Name = "lblTrailSize";
             this.lblTrailSize.Size = new System.Drawing.Size(50, 13);
             this.lblTrailSize.TabIndex = 5;
@@ -93,7 +95,7 @@
             // lblSpeed
             // 
             this.lblSpeed.AutoSize = true;
-            this.lblSpeed.Location = new System.Drawing.Point(969, 226);
+            this.lblSpeed.Location = new System.Drawing.Point(-1, 213);
             this.lblSpeed.Name = "lblSpeed";
             this.lblSpeed.Size = new System.Drawing.Size(38, 13);
             this.lblSpeed.TabIndex = 7;
@@ -101,7 +103,7 @@
             // 
             // trcSpeed
             // 
-            this.trcSpeed.Location = new System.Drawing.Point(972, 242);
+            this.trcSpeed.Location = new System.Drawing.Point(2, 229);
             this.trcSpeed.Maximum = 144;
             this.trcSpeed.Minimum = 10;
             this.trcSpeed.Name = "trcSpeed";
@@ -109,6 +111,21 @@
             this.trcSpeed.TabIndex = 6;
             this.trcSpeed.Value = 60;
             this.trcSpeed.Scroll += new System.EventHandler(this.trcSpeed_Scroll);
+            // 
+            // pnlTools
+            // 
+            this.pnlTools.Controls.Add(this.btnPauseResume);
+            this.pnlTools.Controls.Add(this.lblSpeed);
+            this.pnlTools.Controls.Add(this.btnShutDown);
+            this.pnlTools.Controls.Add(this.trcSpeed);
+            this.pnlTools.Controls.Add(this.btnDrawTriangle);
+            this.pnlTools.Controls.Add(this.lblTrailSize);
+            this.pnlTools.Controls.Add(this.trcTrail);
+            this.pnlTools.Dock = System.Windows.Forms.DockStyle.Right;
+            this.pnlTools.Location = new System.Drawing.Point(969, 0);
+            this.pnlTools.Name = "pnlTools";
+            this.pnlTools.Size = new System.Drawing.Size(166, 568);
+            this.pnlTools.TabIndex = 8;
             // 
             // pnlPane
             // 
@@ -127,22 +144,18 @@
             this.BackColor = System.Drawing.Color.White;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(1135, 568);
-            this.Controls.Add(this.lblSpeed);
-            this.Controls.Add(this.trcSpeed);
-            this.Controls.Add(this.lblTrailSize);
-            this.Controls.Add(this.trcTrail);
-            this.Controls.Add(this.btnDrawTriangle);
-            this.Controls.Add(this.btnShutDown);
-            this.Controls.Add(this.btnPauseResume);
+            this.Controls.Add(this.pnlTools);
             this.Controls.Add(this.pnlPane);
             this.Name = "frmMystify";
             this.Text = "Mystify";
             this.Load += new System.EventHandler(this.frmMystify_Load);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pane_mouse_down);
+            this.Resize += new System.EventHandler(this.frmMystify_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.trcTrail)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trcSpeed)).EndInit();
+            this.pnlTools.ResumeLayout(false);
+            this.pnlTools.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -156,6 +169,7 @@
         private System.Windows.Forms.Label lblTrailSize;
         private System.Windows.Forms.Label lblSpeed;
         private System.Windows.Forms.TrackBar trcSpeed;
+        private System.Windows.Forms.Panel pnlTools;
     }
 }
 
