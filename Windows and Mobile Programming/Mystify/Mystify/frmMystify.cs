@@ -20,6 +20,8 @@ namespace Mystify
         Graphics g;
         MyTimer drawTimer;
         bool paused = false;
+        float paneWidthPercent;
+        float paneHeightPercent;
         public frmMystify()
         {
             InitializeComponent();
@@ -29,6 +31,8 @@ namespace Mystify
             img = new Bitmap(pnlPane.Width,pnlPane.Height);
             g = Graphics.FromImage(img);
             Usefull.drawPanel = pnlPane;
+            paneWidthPercent = (float)pnlPane.Width / this.Width;
+            paneHeightPercent = (float)pnlPane.Height / this.Height;
         }
         public void draw(object e)
         {
@@ -39,6 +43,7 @@ namespace Mystify
         {
 
         }
+        
 
         private void pane_mouse_down(object sender, MouseEventArgs e)
         {
@@ -116,6 +121,17 @@ namespace Mystify
         private void trcSpeed_Scroll(object sender, EventArgs e)
         {
             Usefull.speed = 1000/trcSpeed.Value;
+        }
+
+        private void frmMystify_Resize(object sender, EventArgs e)
+        {
+            pnlPane.Width = (int)(this.Width - pnlTools.Width);
+            pnlPane.Height = (int)(this.Height * paneHeightPercent);
+            if(pnlPane.Height > 0 && pnlPane.Width > 0)
+            {
+                img = new Bitmap(pnlPane.Width, pnlPane.Height);
+                g = Graphics.FromImage(img);
+            }
         }
     }
 }
