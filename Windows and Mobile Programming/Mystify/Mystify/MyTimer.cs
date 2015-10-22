@@ -24,6 +24,10 @@ namespace Mystify
             sender = e;
             start();
         }
+        ~MyTimer()
+        {
+            myFunc = null;
+        }
         public void delay()
         {
             Thread.Sleep(Usefull.speed);
@@ -32,6 +36,8 @@ namespace Mystify
         {
             thread = new Thread(() => loop());
             thread.Start();
+            //thread.Join();
+            //myFunc = null;
         }
         public void loop()
         {
