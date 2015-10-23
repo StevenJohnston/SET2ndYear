@@ -21,6 +21,8 @@ namespace Mystify
 {
     public partial class frmMystify : Form
     {
+        const int ONE_SECOND_IN_MILISECONDS = 1000;
+        const int FRAMES_PER_SECOND = 144;
         /// <summary>
         /// The lock myst shapes
         /// </summary>
@@ -34,23 +36,23 @@ namespace Mystify
         /// </summary>
         List<Shape> mystShapes = new List<Shape>();
         /// <summary>
-        /// The timers
+        /// The timers for shapes
         /// </summary>
         List<MyTimer> timers = new List<MyTimer>();
         /// <summary>
-        /// The img
+        /// The img to be drawn to before drawing to pane
         /// </summary>
         Bitmap img;
         /// <summary>
-        /// The g
+        /// The graphic to be drawn to
         /// </summary>
         Graphics g;
         /// <summary>
-        /// The draw timer
+        /// The Time that handles draw calls. 
         /// </summary>
         MyTimer drawTimer;
         /// <summary>
-        /// The paused
+        /// Used to change the state of the lines. Pause or un-pasued (resumed)
         /// </summary>
         bool paused = false;
         /// <summary>
@@ -67,11 +69,14 @@ namespace Mystify
         public frmMystify()
         {
             InitializeComponent();
-            Usefull.speed = 1000 / trcSpeed.Value;
-            drawTimer = new MyTimer(1000/144, draw, new object());
-            //timers.Add(drawTimer);
+            Usefull.speed = ONE_SECOND_IN_MILISECONDS / trcSpeed.Value;
+            //Create Draw Timer. Call draw function with blank object  
+            drawTimer = new MyTimer(ONE_SECOND_IN_MILISECONDS / FRAMES_PER_SECOND, draw, new object());
+            //Create bitmap sized to fit the pane
             img = new Bitmap(pnlPane.Width,pnlPane.Height);
+            //Create graphic from bitmap
             g = Graphics.FromImage(img);
+            //Easy way to give access to pane from all classes. allowing resizing.
             Usefull.drawPanel = pnlPane;
             paneWidthPercent = (float)pnlPane.Width / this.Width;
             paneHeightPercent = (float)pnlPane.Height / this.Height;
@@ -92,11 +97,15 @@ namespace Mystify
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
         private void pane_mouse_down(object sender, MouseEventArgs e)
         {
+            //Allow new lines if not paused
             if (!paused)
             {
+                //Create new Myst
                 MystLine newMyst = new MystLine(pnlPane, e.Location);
-                MyTimer newTimer = new MyTimer(1000 / trcSpeed.Value, newMyst.update, this);
+                //Create new Timer for line (calls update method of new Myst)
+                MyTimer newTimer = new MyTimer(ONE_SECOND_IN_MILISECONDS / trcSpeed.Value, newMyst.update, this);
                 timers.Add(newTimer);
+                //Add when mystShapes if free.
                 lock (lockMystShapes)
                 {
                     mystShapes.Add(newMyst);
@@ -114,13 +123,15 @@ namespace Mystify
         {
             lock (lockMystShapes)
             {
+                //Sets bitmap to all black
                 g.Clear(Color.Black);
+                //Draw each mystShape on to bitmap
                 foreach (var myst in mystShapes)
                 {
                     myst.draw(g);
                 }
             }
-
+            //Set backgroudn to bitmap
             pnlPane.BackgroundImage = img;
         }
 
@@ -137,6 +148,7 @@ namespace Mystify
                 btnPauseResume.Text = "Resume";
                 lock (lockTimers)
                 {
+                    //Set all mystShape timers to paused state.
                     foreach (var time in timers)
                     {
                         time.pause();
@@ -148,6 +160,7 @@ namespace Mystify
                 btnPauseResume.Text = "Pause";
                 lock (lockTimers)
                 {
+                    //Set all mystShape timers to resumed state (running)
                     foreach (var time in timers)
                     {
                         time.resume();
@@ -162,11 +175,13 @@ namespace Mystify
         {
             lock (lockTimers)
             {
+                //Stop each myst Shape timers
                 foreach (var timer in timers)
                 {
                     timer.stop();
                 }
             }
+            //Remove all timers and shapes
             timers.Clear();
             mystShapes.Clear();
         
@@ -180,17 +195,6 @@ namespace Mystify
         {
             killLineTimers();
         }
-
-        /// <summary>
-        /// Handles the Click event of the btnDrawTriangle control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void btnDrawTriangle_Click(object sender, EventArgs e)
-        {
-
-        }
-
         /// <summary>
         /// Handles the Scroll event of the trcTrail control.
         /// </summary>
@@ -198,6 +202,7 @@ namespace Mystify
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void trcTrail_Scroll(object sender, EventArgs e)
         {
+            //Change trailLength of lines
             foreach (Shape mystShape in mystShapes)
             {
                 Usefull.trailLength = trcTrail.Value;
@@ -213,9 +218,10 @@ namespace Mystify
         {
             lock (lockTimers)
             {
+                //Change myst line timers to sleep a different amount
                 foreach (var timer in timers)
                 {
-                    timer.DelayAmount = 1000 / trcSpeed.Value;
+                    timer.DelayAmount = ONE_SECOND_IN_MILISECONDS / trcSpeed.Value;
                 }
             }
         }
@@ -227,10 +233,13 @@ namespace Mystify
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void frmMystify_Resize(object sender, EventArgs e)
         {
+            //Set width so it fills left of toosl panle 
             pnlPane.Width = (int)(this.Width - pnlTools.Width);
+            //Set height so it keeps same ratio as when launched
             pnlPane.Height = (int)(this.Height * paneHeightPercent);
             if(pnlPane.Height > 0 && pnlPane.Width > 0)
             {
+                //Resize bitmap
                 img = new Bitmap(pnlPane.Width, pnlPane.Height);
                 g = Graphics.FromImage(img);
             }
@@ -243,6 +252,7 @@ namespace Mystify
         /// <param name="e">The <see cref="FormClosingEventArgs"/> instance containing the event data.</param>
         private void frmMystify_FormClosing(object sender, FormClosingEventArgs e)
         {
+            //Remove all line timers and remove the draw timer
             killLineTimers();
             drawTimer.stop();
         }
