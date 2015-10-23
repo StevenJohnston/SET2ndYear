@@ -77,7 +77,7 @@ namespace Mystify
         {
             this.point1 = p1;
             this.point2 = p2;
-            C = newC;
+            Color = newC;
         }
         /// <summary>
         /// Draws this line on e Graphics
@@ -85,7 +85,7 @@ namespace Mystify
         /// <param name="e">The e.</param>
         public override void draw(Graphics e)
         {
-            e.DrawLine(new Pen(C),point1,point2);
+            e.DrawLine(new Pen(Color), point1, point2);
         }
     }
 }
