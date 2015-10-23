@@ -30,7 +30,6 @@
         {
             this.btnPauseResume = new System.Windows.Forms.Button();
             this.btnShutDown = new System.Windows.Forms.Button();
-            this.btnDrawTriangle = new System.Windows.Forms.Button();
             this.trcTrail = new System.Windows.Forms.TrackBar();
             this.lblTrailSize = new System.Windows.Forms.Label();
             this.lblSpeed = new System.Windows.Forms.Label();
@@ -62,31 +61,22 @@
             this.btnShutDown.UseVisualStyleBackColor = true;
             this.btnShutDown.Click += new System.EventHandler(this.btnShutDown_Click);
             // 
-            // btnDrawTriangle
-            // 
-            this.btnDrawTriangle.Location = new System.Drawing.Point(-1, 108);
-            this.btnDrawTriangle.Name = "btnDrawTriangle";
-            this.btnDrawTriangle.Size = new System.Drawing.Size(154, 48);
-            this.btnDrawTriangle.TabIndex = 3;
-            this.btnDrawTriangle.Text = "Draw Triangle";
-            this.btnDrawTriangle.UseVisualStyleBackColor = true;
-            this.btnDrawTriangle.Click += new System.EventHandler(this.btnDrawTriangle_Click);
-            // 
             // trcTrail
             // 
-            this.trcTrail.Location = new System.Drawing.Point(2, 178);
+            this.trcTrail.Location = new System.Drawing.Point(-1, 121);
             this.trcTrail.Maximum = 255;
             this.trcTrail.Minimum = 1;
             this.trcTrail.Name = "trcTrail";
             this.trcTrail.Size = new System.Drawing.Size(153, 45);
             this.trcTrail.TabIndex = 4;
+            this.trcTrail.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trcTrail.Value = 10;
             this.trcTrail.Scroll += new System.EventHandler(this.trcTrail_Scroll);
             // 
             // lblTrailSize
             // 
             this.lblTrailSize.AutoSize = true;
-            this.lblTrailSize.Location = new System.Drawing.Point(-1, 162);
+            this.lblTrailSize.Location = new System.Drawing.Point(-4, 105);
             this.lblTrailSize.Name = "lblTrailSize";
             this.lblTrailSize.Size = new System.Drawing.Size(50, 13);
             this.lblTrailSize.TabIndex = 5;
@@ -95,7 +85,7 @@
             // lblSpeed
             // 
             this.lblSpeed.AutoSize = true;
-            this.lblSpeed.Location = new System.Drawing.Point(-1, 213);
+            this.lblSpeed.Location = new System.Drawing.Point(-4, 156);
             this.lblSpeed.Name = "lblSpeed";
             this.lblSpeed.Size = new System.Drawing.Size(38, 13);
             this.lblSpeed.TabIndex = 7;
@@ -103,12 +93,13 @@
             // 
             // trcSpeed
             // 
-            this.trcSpeed.Location = new System.Drawing.Point(2, 229);
+            this.trcSpeed.Location = new System.Drawing.Point(-1, 172);
             this.trcSpeed.Maximum = 144;
             this.trcSpeed.Minimum = 10;
             this.trcSpeed.Name = "trcSpeed";
             this.trcSpeed.Size = new System.Drawing.Size(153, 45);
             this.trcSpeed.TabIndex = 6;
+            this.trcSpeed.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trcSpeed.Value = 60;
             this.trcSpeed.Scroll += new System.EventHandler(this.trcSpeed_Scroll);
             // 
@@ -118,7 +109,6 @@
             this.pnlTools.Controls.Add(this.lblSpeed);
             this.pnlTools.Controls.Add(this.btnShutDown);
             this.pnlTools.Controls.Add(this.trcSpeed);
-            this.pnlTools.Controls.Add(this.btnDrawTriangle);
             this.pnlTools.Controls.Add(this.lblTrailSize);
             this.pnlTools.Controls.Add(this.trcTrail);
             this.pnlTools.Dock = System.Windows.Forms.DockStyle.Right;
@@ -148,7 +138,7 @@
             this.Controls.Add(this.pnlPane);
             this.Name = "frmMystify";
             this.Text = "Mystify";
-            this.Load += new System.EventHandler(this.frmMystify_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMystify_FormClosing);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pane_mouse_down);
             this.Resize += new System.EventHandler(this.frmMystify_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.trcTrail)).EndInit();
@@ -164,7 +154,6 @@
         private SETPaint.Pane pnlPane;
         private System.Windows.Forms.Button btnPauseResume;
         private System.Windows.Forms.Button btnShutDown;
-        private System.Windows.Forms.Button btnDrawTriangle;
         private System.Windows.Forms.TrackBar trcTrail;
         private System.Windows.Forms.Label lblTrailSize;
         private System.Windows.Forms.Label lblSpeed;
