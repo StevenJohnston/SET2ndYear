@@ -1,7 +1,7 @@
 ﻿/*
  * Name: Steven Johnston
  * File: line.cs
- * Assignment: Mystifiy #03
+ * Assignment: Mystifiy #04
  * Date: 10/23/2015
  * Description: Holds draw function and field for a line
  */

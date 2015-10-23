@@ -1,7 +1,7 @@
 ﻿/*
     Name: Steven Johnston, Matthew Warren
     File: Usefull.cs
-    Assignment: SET Paint (#2)
+    Assignment: SET Paint (#4)
     Date: 10/8/2015
     Description: static class to hold Usefull fields and mehtods used throught the project
 */

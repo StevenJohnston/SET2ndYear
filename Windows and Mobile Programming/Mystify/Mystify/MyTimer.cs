@@ -1,7 +1,7 @@
 ﻿/*
  * Name: Steven Johnston
  * File: MyTimer.cs
- * Assignment: Mystifiy #03
+ * Assignment: Mystifiy #04
  * Date: 10/23/2015
  * Description: A generic timer class. Uses a delay(milliseconds) fuction(delegate) and object(parameters), to replicate a timer.
  */

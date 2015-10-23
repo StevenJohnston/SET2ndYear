@@ -1,7 +1,7 @@
 ﻿/*
     Name: Steven Johnston, Matthew Warren
     File: Shape.cs
-    Assignment: SET Paint (#2)
+    Assignment: SET Paint (#4)
     Date: 10/8/2015
     Description: Shape object that will most often be inherited from
 */

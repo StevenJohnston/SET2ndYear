@@ -1,7 +1,7 @@
 ﻿/*
     Name: Steven Johnston, Matthew Warren
     File: PointVelocity.cs
-    Assignment: SET Paint (#2)
+    Assignment: SET Paint (#4)
     Date: 10/8/2015
     Description: allows for Point(postion) and Point(direction) to be in one object. Direction is also speed(velocity)
 */

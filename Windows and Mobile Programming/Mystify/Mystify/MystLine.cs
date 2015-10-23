@@ -1,7 +1,7 @@
 ﻿/*
  * Name: Steven Johnston
  * File: MystLine.cs
- * Assignment: Mystifiy #03
+ * Assignment: Mystifiy #04
  * Date: 10/23/2015
  * Description: Class to hold a list of lines. Has the PointVelocity for 'front' line. Also handle Update for movement and calls draw method for each line.
  */
