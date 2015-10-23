@@ -15,11 +15,12 @@ using System.Windows.Forms;
 
 namespace Mystify
 {
-    /// <summary>
-    /// 
-    /// </summary>
     class MystLine : Shape
     {
+        /// <summary>
+        /// The linesLock used to lock the lines list.
+        /// </summary>
+        private readonly System.Threading.Mutex linesLock = new System.Threading.Mutex();
         /// <summary>
         /// The random
         /// </summary>
@@ -47,7 +48,7 @@ namespace Mystify
         /// Initializes a new instance of the <see cref="MystLine" /> class.
         /// </summary>
         /// <param name="pane">The pane.</param>
-        /// <param name="start">The start.</param>
+        /// <param name="start">The postion each point will start at.</param>
         public MystLine(SETPaint.Pane pane, Point start)
         {
             //Set poistion and speed for point one
@@ -59,7 +60,7 @@ namespace Mystify
             pointVelocity2.direction.X *= Usefull.plusMinusOne();
             pointVelocity2.direction.Y *= Usefull.plusMinusOne();
             //Create random colour MIGHT BE BLACK 
-            c = Color.FromArgb(255, rnd.Next(255), rnd.Next(255), rnd.Next(255));
+            C = Color.FromArgb(255, rnd.Next(255), rnd.Next(255), rnd.Next(255));
         }
 
         /// <summary>
@@ -90,7 +91,7 @@ namespace Mystify
                 pointVelocity2.move();
                 pointVelocity2.direction = Usefull.keepPointInControl(pointVelocity2.position, pointVelocity2.direction, Usefull.drawPanel);
                 //Add new line(The front line in the Trail) to the list
-                lines.Add(new Line(pointVelocity1.position,pointVelocity2.position, c));
+                lines.Add(new Line(pointVelocity1.position,pointVelocity2.position, C));
             }
         }
         /// <summary>
@@ -101,15 +102,12 @@ namespace Mystify
         {
             lock(linesLock)
             {
+                //Call the draw function of each trail line
                 foreach (var line in lines)
                 {
                     line.draw(e);
                 }
             }
         }
-        /// <summary>
-        /// The linesLock used to lock the lines list.
-        /// </summary>
-        private readonly System.Threading.Mutex linesLock = new System.Threading.Mutex();
     }
 }
