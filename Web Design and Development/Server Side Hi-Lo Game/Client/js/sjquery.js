@@ -4,21 +4,6 @@
 	In seperate script tag so i can make it into a library 
 */
 var elementCallList = [];
-function startMethod(elementIn)
-{
-
-}
-function nextMethod(elementIn)
-{
-	elementCallList;
-}
-
-var doEvent = function(elemnt,stackLimiter)
-{
-
-
-}
-
 //<script type="text/javascript">
 //Name: $SJ ???
 //Decsription: Function expression to allow for selection of DOM elements. Some methods can also be 
@@ -114,18 +99,29 @@ var $SJ = function(elementIn) {
         {
         	for(var element in elements)
         	{
-        		
         		elementCallList[elements[element].id].callList.push({"func" : function(element,val){},
         														"val" : val,"delay" : val});
-
-				if(elementCallList[elements[element].id].running == false)
-				{
-					elementCallList[elements[element].id].running = true;
-					dequeue(elements[element].id);
-				}
+				startQueue(elements[element].id);
         	}
         	return $SJ(elementIn,"defined");
-        },/*
+        },
+		//Name: ready
+		//Decsription: Set function to be called when element's onload function is called
+		//Param:
+		//	func: The function to set element's onload to
+		//Return:
+		//	???
+        ready: function(func) {
+        	for(var element in elements)
+        	{
+	        	if(elements[element] == document.getElementsByTagName("window")){
+	        		elements[element] = window;
+	        	}
+	        	elements[element].onload = func;
+	        }
+			return $SJ(elementIn,"defined");
+        },
+		/*
     	//Name: style
 		//Decsription: set specified style attribute to specified value
 		//Param: 
@@ -165,21 +161,7 @@ var $SJ = function(elementIn) {
 	        }
         	
         },
-    	//Name: ready
-		//Decsription: Set function to be called when element's onload function is called
-		//Param:
-		//	func: The function to set element's onload to
-		//Return:
-		//	???
-        ready: function(func) {
-        	for(var element in elements)
-        	{
-	        	if(elements[element] == document.getElementsByTagName("window")){
-	        		elements[element] = window;
-	        		elements[element].onload = func;
-	        	}
-	        }
-        },
+    	
     	//Name: click
 		//Decsription: Set function to be called when element's onclick function is called
 		//Param:
@@ -427,6 +409,16 @@ function allocateElementsInList(elementArray)
 	}
 }
 
+function startQueue(index)
+{
+	
+				if(elementCallList[index].running == false)
+				{
+					elementCallList[index].running = true;
+					dequeue(index].id);
+				}
+	
+}
 function dequeue(elementIndex) 
 {
 	var thisEle = elementCallList[elementIndex];
