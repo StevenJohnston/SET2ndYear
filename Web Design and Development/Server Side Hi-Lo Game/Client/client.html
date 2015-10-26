@@ -1,5 +1,4 @@
 <!DOCTYPE HTML>
-<?php var hiddenVal =0?>
 <html>
 <head>
 	<title>Client SErver Hi-Lo Game</title>
@@ -9,14 +8,10 @@
 <body>
 	<h1>Client High Low Game</h1>
 	<h2>Steven Johnston</h2>
-	<?php if($post['hidden'] == 0)
-	echo '
 	<div id="divName">
 		<h3>Name: <input type="text" id="txtName">
 		<button id="btnName">Submit</button></h3>
-	</div>';
-	?>
-	<input style="display:hidden" name="hidden" value = <?php echo (hiddenVal) ?> ."></input>
+	</div>
 	<div id="divMax" style="display:none">
 		<h3>Hi, <label id="lblName"></label> enter maximum guess number</h3>
 		<input type="text" id="txtMax">
@@ -25,7 +20,7 @@
 	<div id="divGame" style="display:none">
 		<div id="divRange">
 			<h3 style="display:inline-block">select a number between </h3>
-			<h2 style="display:inline-block"id="lblMin"></h2> 
+			<h2 style="display:inline-block"id="lblMin"></h2>
 			<h3 style="display:inline-block">and </h3>
 			<h2 style="display:inline-block" id="lblMax"></h2>
 		</div>
