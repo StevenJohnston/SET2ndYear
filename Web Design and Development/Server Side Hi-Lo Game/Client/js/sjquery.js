@@ -1,12 +1,12 @@
 
 /*
 	Make shift JQUERY ($SJ)
-	In seperate script tag so i can make it into a library 
+	In seperate script tag so i can make it into a library
 */
 var elementCallList = [];
 //<script type="text/javascript">
 //Name: $SJ ???
-//Decsription: Function expression to allow for selection of DOM elements. Some methods can also be 
+//Decsription: Function expression to allow for selection of DOM elements. Some methods can also be
 //				run on specified element. (methods listed in return case)
 //Param:
 //	element: The Dom element to select
@@ -41,7 +41,7 @@ var $SJ = function(elementIn) {
 				break;
 			default: //by TagName
 				if(elementIn == "window"){
-					elements.push(document.getElementsByTagName(elementIn));
+					elements.push(window);
 				}
 				else
 				{
@@ -63,21 +63,13 @@ var $SJ = function(elementIn) {
 		//Param:
 		//	html: What to be set in the innerHTML of element
 		//Return:
-		//	
+		//
         innerHTML: function(val) {
         	if(val != undefined)
         	{
 	        	for(var element in elements)
 	        	{
-	        		
-	        		elementCallList[elements[element].id].callList.push({"func" : function(element,val){element.innerHTML = val},
-	        														"val" : val,"delay" : 0});
-
-					if(elementCallList[elements[element].id].running == false)
-					{
-						elementCallList[elements[element].id].running = true;
-						dequeue(elements[element].id);
-					}
+					queue(elements[element].id,function(element,val){element.innerHTML = val;},val,0);
 	        	}
 				return $SJObj;
 	        }else
@@ -99,9 +91,7 @@ var $SJ = function(elementIn) {
         {
         	for(var element in elements)
         	{
-        		elementCallList[elements[element].id].callList.push({"func" : function(element,val){},
-        														"val" : val,"delay" : val});
-				startQueue(elements[element].id);
+				queue(elements[element].id,function(element,val){},val,val);
         	}
 			return $SJObj;
         },
@@ -114,23 +104,21 @@ var $SJ = function(elementIn) {
         ready: function(func) {
         	for(var element in elements)
         	{
-	        	if(elements[element] == document.getElementsByTagName("window")){
-	        		elements[element] = window;
-	        	}
-	        	elements[element].onload = func;
+	        	queue(elements[element].id,function(element,func){element.onload = func;},func,0);
 	        }
 			return $SJObj;
         },
 		//Name: focus
-		//Decsription: Sets focus to element 
+		//Decsription: Sets focus to element
 		//Param:
-		//	
+		//
 		//Return:
-		//	
+		//
         focus: function(index){
+
         	if(index == undefined) index = 0;
 			if(index >= elements.length) index = 0;
-        	elements[index].focus();
+			queue(elements[index].id,function(element,val){element.focus();},undefined,0)
 			return $SJObj;
         },
 		//Name: click
@@ -138,7 +126,7 @@ var $SJ = function(elementIn) {
 		//Param:
 		//	func: The function to set element's onclick to
 		//Return:
-		//	
+		//
         click: function(func){
         	for (var element in elements)
         	{
@@ -150,14 +138,14 @@ var $SJ = function(elementIn) {
 					elements[element].dispatchEvent(evObj);
 	        	}
 	        	else{
-	        		elements[element].onclick = func;
+	        		queue(elements[element].id, function(element,obj){element.onclick = obj;},func,0);
 	        	}
 	        }
 			return $SJObj;
         },
 		//Name: style
 		//Decsription: set specified style attribute to specified value
-		//Param: 
+		//Param:
 		//	attr: The style attribute to change
 		//Return:
 		//	value: Value to set attribute to
@@ -173,10 +161,10 @@ var $SJ = function(elementIn) {
 	        			}
 	        			else
 	        			{
-	        				elements[element].style.display = val;
+							queue(elements[element].id,function(element,obj){element.style.display=obj;},val,0);
 	        			}
 	        			break;
-	        		case "background-color": 
+	        		case "background-color":
 					case "backgroundColor":
 					case "backgroundcolor":
 	        			if(val == undefined)
@@ -185,7 +173,7 @@ var $SJ = function(elementIn) {
 	        			}
 	        			else
 	        			{
-	        				elements[element].style.backgroundColor = val;
+							queue(elements[element].id,function(element,obj){element.style.backgroundColor=obj;},val,0);
 	        			}
 	        			break;
 	        		default:
@@ -199,12 +187,12 @@ var $SJ = function(elementIn) {
 		//Param:
 		//	val: if set, sets value of element equal to val else return element's current value
 		//Return:
-		//	
+		//
         value: function(val){
         	for (var element in elements)
         	{
 	        	if(val != undefined){
-	        		elements[element].value = val;
+					queue(elements[element].id,function(element,obj){element.value=obj;},val,0);
 	        	}else{
 	        	   	return elements[element].value;
 	        	}
@@ -217,13 +205,13 @@ var $SJ = function(elementIn) {
 		//	name: The name of the attribute to set
 		//	val: The value to set the attribute to. If not defined nothing happens
 		//Return:
-		//	
+		//
         setAttr: function(name, val){
 			if(val != undefined)
 			{
 				for (var element in elements)
 				{
-					elements[element].setAttribute(name,val);
+					queue(elements[element].id,function(element,obj){element.setAttribute(obj.name,obj.val);},{"name":name,"val":val},0);
 				}
 			}
 			return $SJObj;
@@ -246,7 +234,7 @@ var $SJ = function(elementIn) {
 		        	if(elements[element].hasAttribute(name))
 					{
 						if(elements[element].getAttribute(name) == val)
-						{	
+						{
 							valElements.push(elements[element]);
 						}
 					}
@@ -259,18 +247,18 @@ var $SJ = function(elementIn) {
 		//Param:
 		//	func: The function to set element's onkeydown to
 		//Return:
-		//	
+		//
         keydown: function(func){
         	for (var element in elements)
         	{
-        		elements[element].onkeydown = func;
+				queue(elements[element].id,function(element,obj){element.onkeydown = obj;},funcs,0);
         	}
 			return $SJObj;
         },
 		//Name: selectedId
 		//Decsription: gets selected id of element
 		//Param:
-		//	
+		//
 		//Return:
 		//	selecteid(s) of element
         selectedId: function()
@@ -285,7 +273,7 @@ var $SJ = function(elementIn) {
 		//Param:
 		//	val: value to set elements to
 		//Return:
-		//	
+		//
         checked: function(val)
         {
         	for (var element in elements)
@@ -296,13 +284,24 @@ var $SJ = function(elementIn) {
 	        	}
 	        	else
 	        	{
-	        		elements[element].checked = val;
+					queue(elements[element].id,function(element,obj){element.checked = obj;},val,0);
 	        	}
 	        }
 			return $SJObj;
         },
 		//Name: repeat
-		//Desciption: Repeats 
+		//Desciption: Repeats
+		//Param:
+		//
+		//Return:
+		//
+		repeat: function(func,times)
+		{
+			for(var i= 0 ; i < times; i++)
+			{
+
+			}
+		}
     }
 };
 
@@ -313,12 +312,12 @@ function getNextID()
 	for(;document.getElementById(nextID) != undefined; nextID++){}
 	return nextID++;
 }
-//Gives each element a unique ID if it doesnt have one 
+//Gives each element a unique ID if it doesnt have one
 function GiveIDifNotExist(elementArray)
 {
 	for(var element in elementArray)
 	{
-		if(elementArray[element].id == "")
+		if(elementArray[element].id == "" || elementArray[element].id == undefined)
 		{
 			elementArray[element].id = getNextID();
 		}
@@ -347,7 +346,14 @@ function startQueue(index)
 		dequeue(index);
 	}
 }
-function dequeue(elementIndex) 
+function queue(elementIndex,func,val,delay)
+{
+	elementCallList[elementIndex].callList.push({"func" : func,
+													"val" : val,
+													"delay" : delay});
+	startQueue(elementIndex);
+}
+function dequeue(elementIndex)
 {
 	var thisEle = elementCallList[elementIndex];
 	if(thisEle.callList.length != 0)
