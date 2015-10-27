@@ -71,7 +71,7 @@ var $SJ = function(elementIn) {
 	        	{
 					queue(elements[element].id,function(element,val){element.innerHTML = val;},val,0);
 	        	}
-				return $SJObj;
+				return $SJ(elementIn,"defined");
 	        }else
 	        {
 	        	var innerHTMLs = [];
@@ -93,7 +93,7 @@ var $SJ = function(elementIn) {
         	{
 				queue(elements[element].id,function(element,val){},val,val);
         	}
-			return $SJObj;
+			return $SJ(elementIn,"defined");
         },
 		//Name: ready
 		//Decsription: Set function to be called when element's onload function is called
@@ -104,7 +104,8 @@ var $SJ = function(elementIn) {
         ready: function(func) {
         	for(var element in elements)
         	{
-	        	queue(elements[element].id,function(element,func){element.onload = func;},func,0);
+        		elements[element].onload = func;
+	        	queue(elements[element].id,function(element,obj){element.onload = obj;},func,0);
 	        }
 			return $SJObj;
         },
@@ -251,7 +252,7 @@ var $SJ = function(elementIn) {
         keydown: function(func){
         	for (var element in elements)
         	{
-				queue(elements[element].id,function(element,obj){element.onkeydown = obj;},funcs,0);
+				queue(elements[element].id,function(element,obj){element.onkeydown = obj;},func,0);
         	}
 			return $SJObj;
         },
@@ -290,21 +291,44 @@ var $SJ = function(elementIn) {
 			return $SJObj;
         },
 		//Name: repeat
-		//Desciption: Repeats
+		//Desciption: Repeats function(s) mutiple times
 		//Param:
 		//
 		//Return:
 		//
 		repeat: function(func,times)
 		{
-			for(var i= 0 ; i < times; i++)
-			{
-
+			for (var element in elements)
+        	{
+				for(var i = 0 ; i < times; i++)
+				{
+					queue(elements[element].id,function(element,obj){obj();},func,0);
+				}
 			}
-		}
+		},
     }
 };
-
+var $ajax = function(obj){
+	if(obj.url == undefined) return false;
+	if(obj.method == undefined) obj.method = "GET";
+	if(obj.async == undefined) obj.async = false;
+	var data;
+	var doneFunc;
+	var xhttp = new XMLHttpRequest();
+  	xhttp.onreadystatechange = function() {
+	    if (xhttp.readyState == 4 && xhttp.status == 200) {
+	     	doneFunc(xhttp.responseText);
+    	}
+  	}
+  	xhttp.open(obj.method, obj.url, obj.async);
+  	xhttp.send();
+  	return
+  	{
+  		done: function(func){
+  			doneFunc = func;
+  		},
+  	}
+}
 //Get next free id and return it
 var nextID =0;
 function getNextID()
@@ -346,10 +370,10 @@ function startQueue(index)
 		dequeue(index);
 	}
 }
-function queue(elementIndex,func,val,delay)
+function queue(elementIndex,func,obj,delay)
 {
 	elementCallList[elementIndex].callList.push({"func" : func,
-													"val" : val,
+													"obj" : obj,
 													"delay" : delay});
 	startQueue(elementIndex);
 }
@@ -359,16 +383,17 @@ function dequeue(elementIndex)
 	if(thisEle.callList.length != 0)
 	{
 		setTimeout(function(){
-			thisEle.callList[0].func(thisEle.elementObject,thisEle.callList[0].val);
+			thisEle.callList[0].func(thisEle.elementObject,thisEle.callList[0].obj);
 			thisEle.callList.shift();
 			dequeue(elementIndex);
 		},thisEle.callList[0].delay);
 	}
-	thisEle.running = false;
-	//var thisEle = elementCallList[elementIndex];
-	//thisEle.callList[0].func(thisEle.elementObject,thisEle.callList[0].val);
+	else
+	{
+		thisEle.running = false;
+	}
 }
 function $SJObj()
 {
-	$SJ(elementIn,"defined");
+	return $SJ(elementIn,"defined");
 }
