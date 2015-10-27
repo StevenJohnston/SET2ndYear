@@ -3,8 +3,9 @@ var max = 0; //max Number in guess
 	var answer; //Answer for guesses
 	var name; //Name of Player
 	//When window is ready
+	
+
 	$SJ("window").ready(function(){
-		console.log("okay");
 		//Set focus to element with id = txtName
 		$SJ("#txtName").focus();
 		//btnName on click
