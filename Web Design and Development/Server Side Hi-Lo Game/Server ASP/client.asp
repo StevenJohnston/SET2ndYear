@@ -18,7 +18,7 @@
 	</div>
 	<!--Div to hold entire game. Allows for easy hidding-->
 	<div id='divMain'>
-		<h1 id='chlg'>Client High Low Game</h1>
+		<h1>ASP Server High Low Game</h1>
 		<h2>Steven Johnston</h2>
 		<!--Div to hold the enter name content-->
 		<div id='divName'>
