@@ -13,6 +13,15 @@ namespace ASPNET_HiLo {
     public partial class HiLoGame {
         
         /// <summary>
+        /// bodyEl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl bodyEl;
+        
+        /// <summary>
         /// mainForm control.
         /// </summary>
         /// <remarks>
@@ -76,6 +85,15 @@ namespace ASPNET_HiLo {
         protected global::System.Web.UI.HtmlControls.HtmlInputText txtName;
         
         /// <summary>
+        /// nameValid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator nameValid;
+        
+        /// <summary>
         /// btnName control.
         /// </summary>
         /// <remarks>
@@ -103,6 +121,15 @@ namespace ASPNET_HiLo {
         protected global::System.Web.UI.HtmlControls.HtmlInputText txtMax;
         
         /// <summary>
+        /// maxValid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator maxValid;
+        
+        /// <summary>
         /// btnMax control.
         /// </summary>
         /// <remarks>
@@ -128,6 +155,15 @@ namespace ASPNET_HiLo {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputText txtGuess;
+        
+        /// <summary>
+        /// guessValid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator guessValid;
         
         /// <summary>
         /// btnGuess control.
