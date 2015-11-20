@@ -1,8 +1,9 @@
 <h1>Client Server Data Service</h1>
 <h3>Objectives:</h3>
-- To review file I/O basics
-- To simulate a database service
-- 
+<ul>
+  <li>To review file I/O basics</li>
+  <li>To simulate a database service</li>
+</ul>
 <h3>Description:</h3>
 You will write a client-server software system that demonstrates how a database system normally
 operates in a network environment. Generally, a database system runs as a service that responds to
@@ -13,7 +14,7 @@ update at the same time.
 <h3>Requirements:</h3>
 <ol>
 <li>The database file consists of records with the following fields:</li>
-<ol type="A">
+<ol type="a">
 <li>MemberID (as an integer)</li>
 <li>FirstName (as a variable length string)</li>
 <li>LastName (as a variable length string)</li>
@@ -21,7 +22,7 @@ update at the same time.
 </ol>
 <li>Write a server program that will run continuously, listening for requests to write to the
 database. There are only 3 requests that the server can respond to:</li>
-<ol type="A">
+<ol type="a">
 <li>INSERT - allows the insertion of new data. The data should be provided only as the
 FirstName, LastName and DateOfBirth. The MemberID is automatically generated and
 written to the file with the rest of the data. The automatically generated MemberID
