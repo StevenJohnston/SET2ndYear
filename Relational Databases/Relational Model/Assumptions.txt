@@ -1,0 +1,8 @@
+Assumptions  ** The word "may" is very miss leading and often created an assumption **
+1. Item must exist in at least on branch 2. Multiple customer can live at the same address 
+3. A employee and customer can have same address
+4. A Skills skill may not be a trait of any employees
+5. An employee can have zero dependencies 6. An Item can consist of multiple Items that have different quantities
+7. An Address can exist without an Employee or Customer
+8. A dependency can have multiple employees (ex mother, father same store)
+9. That Wally Los Gatos will want to add more information for each branch in the future. That's why there is a branch table with just an primary key.
